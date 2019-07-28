@@ -4,14 +4,14 @@ spring:
   main:
     allow-bean-definition-overriding: true
   application:
-    name: everyday_buy
+    name: everyday-buy
   datasource:
     name: everyday_source
     type: com.alibaba.druid.pool.DruidDataSource
     druid:
-      url: jdbc:mysql://127.0.0.1:3306/equipment?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=GMT%2B8
+      url: jdbc:mysql://127.0.0.1:3306/everyday_buy?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=GMT%2B8
       username: root
-      password: 123456
+      password: password
       filters: stat
       driver-class-name: com.mysql.cj.jdbc.Driver
       initial-size: 1

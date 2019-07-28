@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seasoning.mapper.OrderMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.seasoning.entity.Order">
+        <id column="id" property="id" />
+        <result column="order_id" property="orderId" />
+        <result column="user_id" property="userId" />
+        <result column="take_delivery_name" property="takeDeliveryName" />
+        <result column="take_delivery_mobiles" property="takeDeliveryMobiles" />
+        <result column="order_type" property="orderType" />
+        <result column="delivery_address" property="deliveryAddress" />
+        <result column="update_time" property="updateTime" />
+        <result column="create_time" property="createTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, order_id, user_id, take_delivery_name, take_delivery_mobiles, order_type, delivery_address, update_time, create_time
+    </sql>
+
+</mapper>

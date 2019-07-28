@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seasoning.mapper.GoodsMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.seasoning.entity.Goods">
+        <id column="id" property="id" />
+        <result column="goods_name" property="goodsName" />
+        <result column="purpose" property="purpose" />
+        <result column="price" property="price" />
+        <result column="goods_type_id" property="goodsTypeId" />
+        <result column="show_image" property="showImage" />
+        <result column="detail_image" property="detailImage" />
+        <result column="selling" property="selling" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, goods_name, purpose, price, goods_type_id, show_image, detail_image, selling
+    </sql>
+
+</mapper>

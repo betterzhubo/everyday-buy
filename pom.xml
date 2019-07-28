@@ -9,7 +9,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.seasoning</groupId>
-    <artifactId>everyday_buy</artifactId>
+    <artifactId>everyday-buy</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>everyday_buy</name>
     <dependencies>
@@ -65,6 +65,13 @@
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
             <version>1.2.56</version>
+        </dependency>
+        <dependency>
+
+            <groupId>org.springframework.boot</groupId>
+
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+
         </dependency>
 
     </dependencies>

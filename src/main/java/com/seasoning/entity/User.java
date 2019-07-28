@@ -32,11 +32,13 @@ public class User implements Serializable {
     @TableField("name")
     private String name;
 
+    @TableField("password")
+    private String password;
+
     @TableField("update_time")
     private LocalDateTime updateTime;
 
     @TableField("create_time")
     private LocalDateTime createTime;
-
 
 }
