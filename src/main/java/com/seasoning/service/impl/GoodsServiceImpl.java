@@ -1,8 +1,5 @@
 package com.seasoning.service.impl;
 
-import com.seasoning.entity.Goods;
-import com.seasoning.mapper.GoodsMapper;
-import com.seasoning.service.GoodsService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 

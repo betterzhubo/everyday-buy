@@ -35,8 +35,8 @@ public class ShoppingCart implements Serializable {
     @TableField("goods_id")
     private String goodsId;
 
-    @TableField("goods_number")
-    private Integer goodsNumber;
+    @TableField("goods_count")
+    private Integer goodsCount;
 
     @TableField("update_time")
     private LocalDateTime updateTime;

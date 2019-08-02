@@ -1,6 +1,5 @@
 package com.seasoning.service;
 
-import com.seasoning.entity.Goods;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**

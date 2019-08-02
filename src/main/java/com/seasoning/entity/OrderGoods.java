@@ -2,6 +2,8 @@ package com.seasoning.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.TableId;
+
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.TableField;
 import java.io.Serializable;
@@ -34,11 +36,11 @@ public class OrderGoods implements Serializable {
     @TableField("goods_name")
     private String goodsName;
 
-    @TableField("goods_number")
-    private Integer goodsNumber;
+    @TableField("goods_count")
+    private Integer goodsCount;
 
     @TableField("goods_price")
-    private Double goodsPrice;
+    private BigDecimal goodsPrice;
 
     @TableField("update_time")
     private LocalDateTime updateTime;

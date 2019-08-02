@@ -1,13 +1,15 @@
 package com.seasoning.entity;
 
-import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableField;
-import java.io.Serializable;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+
+import java.io.Serializable;
+import java.math.BigDecimal;
 
 /**
  * <p>
@@ -15,7 +17,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author better
- * @since 2019-07-28
+ * @since 2019-07-31
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -32,20 +34,26 @@ public class Goods implements Serializable {
     private String goodsName;
 
     /**
-     * 1,餐饮;2,自用
+     * 0:餐饮,1:自由
      */
     @TableField("purpose")
     private Integer purpose;
 
     @TableField("price")
-    private Double price;
+    private BigDecimal price;
 
     @TableField("goods_type_id")
     private Integer goodsTypeId;
 
+    /**
+     * 展示图片
+     */
     @TableField("show_image")
     private String showImage;
 
+    /**
+     * 详情内图片
+     */
     @TableField("detail_image")
     private String detailImage;
 

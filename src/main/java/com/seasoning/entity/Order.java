@@ -35,11 +35,11 @@ public class Order implements Serializable {
     @TableField("user_id")
     private Integer userId;
 
-    @TableField("take_delivery_name")
-    private String takeDeliveryName;
+    @TableField("consignee_name")
+    private String consigneeName;
 
-    @TableField("take_delivery_mobiles")
-    private String takeDeliveryMobiles;
+    @TableField("consignee_mobiles")
+    private String consigneeMobiles;
 
     /**
      * 1,待支付;2,待配送;3,配送中;4,已完成;5,已取消
@@ -47,8 +47,8 @@ public class Order implements Serializable {
     @TableField("order_type")
     private Integer orderType;
 
-    @TableField("delivery_address")
-    private String deliveryAddress;
+    @TableField("consignee_address")
+    private String consigneeAddress;
 
     @TableField("update_time")
     private LocalDateTime updateTime;

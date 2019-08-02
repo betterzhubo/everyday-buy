@@ -7,17 +7,17 @@
         <id column="id" property="id" />
         <result column="order_id" property="orderId" />
         <result column="user_id" property="userId" />
-        <result column="take_delivery_name" property="takeDeliveryName" />
-        <result column="take_delivery_mobiles" property="takeDeliveryMobiles" />
+        <result column="consignee_name" property="consigneeName" />
+        <result column="consignee_mobiles" property="consigneeMobiles" />
         <result column="order_type" property="orderType" />
-        <result column="delivery_address" property="deliveryAddress" />
+        <result column="consignee_address" property="consigneeAddress" />
         <result column="update_time" property="updateTime" />
         <result column="create_time" property="createTime" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, order_id, user_id, take_delivery_name, take_delivery_mobiles, order_type, delivery_address, update_time, create_time
+        id, order_id, user_id, consignee_name, consignee_mobiles, order_type, consignee_address, update_time, create_time
     </sql>
 
 </mapper>

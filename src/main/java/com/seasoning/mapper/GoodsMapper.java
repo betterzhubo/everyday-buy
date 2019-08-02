@@ -1,6 +1,5 @@
 package com.seasoning.mapper;
 
-import com.seasoning.entity.Goods;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**
