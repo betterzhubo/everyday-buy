@@ -50,8 +50,8 @@ public class GoodsController {
     }
 
     @PutMapping("/update")
-    public BaseMsg update(@RequestBody Goods goods, BindingResult result) {
-        if(result.hasErrors()){
+    public BaseMsg update(Goods goods) {
+        if(null == goods.getId()){
             return CommonUtil.returnMsg(MsgConstant.PARAM_ERROR);
         }
         UpdateWrapper updateWrapper = new UpdateWrapper();
@@ -87,8 +87,8 @@ public class GoodsController {
         return CommonUtil.returnMsg(MsgConstant.OK,  goodsService.removeById(goodsId));
     }
 
-    @PostMapping("/list")
-    public BaseMsg list(@RequestBody GoodsSearchRequest request)  {
+    @PostMapping("/page")
+    public BaseMsg page(@RequestBody GoodsSearchRequest request)  {
 
         QueryWrapper<Goods> queryWrapper = new QueryWrapper<>();
         Page<Goods> page = new Page<>();
