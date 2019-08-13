@@ -117,9 +117,10 @@ form {
 .info-content .prop-name {
 	float: left;
 	padding:5px 0 0 0;
-	width: 80px;
+	width: 90px;
 	text-align: right;
 	font-weight: bold;
+	cursor: default;
 }
 
 .info-content .prop-value {
@@ -188,4 +189,8 @@ form {
 
 .info-block{
 	margin:0 0 10px 0;
+}
+.add-tag{
+	float: left;
+	margin: 5px 0 0 5px;
 }

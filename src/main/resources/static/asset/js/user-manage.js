@@ -173,14 +173,16 @@ $(function (){
 		$("#user-view .info-content").slideToggle("fast");
 	});
 	
-	$("#btn-view-edit").click(function(){
-		userManage.editItemInit(userManage.currentItem);
-	});
-	
 	$(".btn-cancel").click(function(){
 		userManage.showItemDetail(userManage.currentItem);
 	});
+
+
 });
+var clickImageTag = function(imageStr, itemId){
+	console.log("show image");
+}
+
 
 var userManage = {
 	currentItem : null,
@@ -229,17 +231,29 @@ var userManage = {
 			return;
 		}
 		$("#goods-name-view").text(item.goodsName);
-		$("#position-view").text(item.price);
-		$("#salary-view").text(item.salary);
-		$("#start-date-view").text(item.start_date);
-		$("#office-view").text(item.office);
-		$("#extn-view").text(item.extn);
-		$("#role-view").text(item.role?"管理员":"操作员");
-		$("#status-view").text(item.status?"在线":"离线");
+		$("#price-view").text(item.price);
+		$("#goods-type-view").text(item.goodsTypeId);
+		$("#purpose-view").text(item.purpose);
+		$("#selling-view").text(item.selling?"上架":"下架");
+
+		$("#show-image-view a").click(function() {
+			clickImageTag(item.id, item.showImage);
+		});
+
+		$("#detail-image-view a").click(function() {
+			clickImageTag(item.id, item.detailImage);
+		});
 	},
 	addItemInit : function() {
 		$("#form-add")[0].reset();
-		
+
+		$("#show-image-add a").click(function() {
+			clickImageTag();
+		});
+
+		$("#detail-image-add a").click(function() {
+			clickImageTag();
+		});
 		$("#user-add").show().siblings(".info-block").hide();
 	},
 	editItemInit : function(item) {
@@ -247,14 +261,18 @@ var userManage = {
 			return;
 		}
 		$("#form-edit")[0].reset();
-		$("#title-edit").text(item.name);
-		$("#name-edit").val(item.name);
-		$("#position-edit").val(item.position);
-		$("#salary-edit").val(item.salary);
-		$("#start-date-edit").val(item.start_date);
-		$("#office-edit").val(item.office);
-		$("#extn-edit").val(item.extn);
-		$("#role-edit").val(item.role);
+		$("#goods-name-edit").val(item.goodsName);
+		$("#price-edit").val(item.price);
+		$("#goods-type-edit").val(item.goodsTypeId);
+		$("#purpose-edit").val(item.purpose);
+		$("#selling-edit").val(item.selling);
+		$("input[name='sell-edit'][value=" + item.selling).attr("checked",true);
+		$("#show-image-edit").click(function() {
+			clickImageTag(item.id, item.showImage);
+		});
+		$("#detail-image-edit").click(function() {
+			clickImageTag(item.id, item.detailImage);
+		});
 		$("#user-edit").show().siblings(".info-block").hide();
 	},
 	addItemSubmit : function() {
@@ -267,7 +285,7 @@ var userManage = {
 		var message;
 		if (selectedItems&&selectedItems.length) {
 			if (selectedItems.length == 1) {
-				message = "确定要删除 '"+selectedItems[0].name+"' 吗?";
+				message = "确定要删除 '"+selectedItems[0].goodsName+"' 吗?";
 				
 			}else{
 				message = "确定要删除选中的"+selectedItems.length+"项记录吗?";
