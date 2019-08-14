@@ -172,16 +172,65 @@ $(function (){
 		$("span",this).toggle();
 		$("#user-view .info-content").slideToggle("fast");
 	});
-	
+
 	$(".btn-cancel").click(function(){
 		userManage.showItemDetail(userManage.currentItem);
 	});
-
-
 });
-var clickImageTag = function(imageStr, itemId){
-	console.log("show image");
+
+//clickSource : 0:查看1:添加2:修改, 0:展示图片,1:详情图片
+var clickImageTag = function(clickSource){
+
+	$("#goods-image-list").show().siblings(".info-block").hide();
+
+	$(".btn-back").click(function(){
+		$("#user-edit").show().siblings(".info-block").hide();
+		$("#goods-add-head").show().siblings(".block-header").hide();
+	});
 }
+
+//建立一個可存取到該file的url
+function getObjectURL(file) {
+	var url = null ;
+	if (window.createObjectURL!=undefined) { // basic
+		url = window.createObjectURL(file) ;
+	} else if (window.URL!=undefined) { // mozilla(firefox)
+		url = window.URL.createObjectURL(file) ;
+	} else if (window.webkitURL!=undefined) { // webkit or chrome
+		url = window.webkitURL.createObjectURL(file) ;
+	}
+	return url ;
+}
+
+$(".file").change(function() {
+	//获取选择图片的对象
+	var docObj = $(this)[0];
+	var picDiv = $(this).parents(".picDiv");
+	//得到所有的图片文件
+	var fileList = docObj.files;
+	//循环遍历
+	for (var i = 0; i < fileList.length; i++) {
+		//动态添加html元素
+		var picHtml = $("<div class='imageDiv' > <img id='img-" + fileList[i].name + "' /> <div class='cover'><i class='delbtn'>删除</i></div></div>");
+		picDiv.append(picHtml);
+		//获取图片img的对象
+		var imgObjPreview = picHtml.find("img");
+		if (fileList && fileList[i]) {
+			//图片属性
+			imgObjPreview.css({"display":"block", "width":"160px", "height":"130px"});
+			imgObjPreview.attr("src", getObjectURL(docObj.files[i]));
+			// imgObjPreview.src = window.URL.createObjectURL(docObj.files[i]); //获取上传图片文件的物理路径;
+			console.log(imgObjPreview.attr("src"));
+
+		}
+	}
+
+	/*删除功能*/
+	$(".delbtn").click(function() {
+		var _this = $(this);
+		_this.parents(".imageDiv").remove();
+	});
+});
 
 
 var userManage = {
@@ -236,30 +285,30 @@ var userManage = {
 		$("#purpose-view").text(item.purpose);
 		$("#selling-view").text(item.selling?"上架":"下架");
 
-		$("#show-image-view a").click(function() {
-			clickImageTag(item.id, item.showImage);
+		$("#show-image-view").click(function() {
+			clickImageTag();
 		});
 
-		$("#detail-image-view a").click(function() {
-			clickImageTag(item.id, item.detailImage);
+		$("#detail-image-view").click(function() {
+			clickImageTag();
 		});
 	},
 	addItemInit : function() {
-		$("#form-add")[0].reset();
+		$("#form-edit")[0].reset();
 
-		$("#show-image-add a").click(function() {
+		$("#show-image-edit").click(function() {
 			clickImageTag();
 		});
 
-		$("#detail-image-add a").click(function() {
+		$("#detail-image-edit").click(function() {
 			clickImageTag();
 		});
-		$("#user-add").show().siblings(".info-block").hide();
+		$("#user-edit").show().siblings(".info-block").hide();
+		$("#goods-add-head").show().siblings(".block-header").hide();
 	},
 	editItemInit : function(item) {
-		if (!item) {
-			return;
-		}
+		if (!item) return;
+
 		$("#form-edit")[0].reset();
 		$("#goods-name-edit").val(item.goodsName);
 		$("#price-edit").val(item.price);
@@ -268,12 +317,13 @@ var userManage = {
 		$("#selling-edit").val(item.selling);
 		$("input[name='sell-edit'][value=" + item.selling).attr("checked",true);
 		$("#show-image-edit").click(function() {
-			clickImageTag(item.id, item.showImage);
+			clickImageTag();
 		});
 		$("#detail-image-edit").click(function() {
-			clickImageTag(item.id, item.detailImage);
+			clickImageTag();
 		});
 		$("#user-edit").show().siblings(".info-block").hide();
+		$("#goods-edit-head").show().siblings(".block-header").hide();
 	},
 	addItemSubmit : function() {
 		$.dialog.tips('保存当前添加用户');

@@ -118,77 +118,39 @@
 					</div>
 				</div>
 				</div>
-				<div class="block info-block" id="user-add" style="display:none;">
+				<div class="block info-block" id="goods-image-list" style="display:none;">
 					<div class="navbar navbar-inner block-header">
-						<div class="block-title">添加商品</div>
+						<div class="block-title">商品图片</div>
 						<div class="header-buttons">
-							<button type="button" class="btn btn-primary" id="btn-save-add">确定添加</button>
-							<button type="button" class="btn btn-cancel">取消</button>
+							<button type="button" class="btn btn-back">返回</button>
 						</div>
 					</div>
-					<div class="block-content info-content clearfix">
-						<form id="form-add">
-							<div class="control-group">
-								<label class="control-label" for="goods-name-add">
-									<span class="red-asterisk">*</span>商品名:</label>
-								<div class="controls">
-									<input type="text" id="goods-name-add" name="goods-name-add">
-								</div>
-							</div>
-							<div class="control-group">
-								<label class="control-label" for="price-add">价格:</label>
-								<div class="controls">
-									<input type="number" id="price-add" step="0.1" name="price-add">
-								</div>
-							</div>
-							<div class="control-group">
-								<label class="control-label" for="goods-type-add">商品类型:</label>
-								<div class="controls">
-									<select id="goods-type-add" name="goods-type-add">
-										<option value="1" selected>管理员</option>
-										<option value="0">操作员</option>
-									</select>
-								</div>
-							</div><div class="control-group">
-								<label class="control-label" for="purpose-add">商品用途:</label>
-								<div class="controls">
-									<select id="purpose-add" name="purpose-add">
-										<option value="0" selected>餐饮</option>
-										<option value="1">自用</option>
-									</select>
-								</div>
-							</div>
-							<div class="control-group">
-								<label class="control-label" for="selling-add">上架:</label>
-								<div class="add-tag">
-									<input type="radio" id="selling-add" value="1" name="sell-add">
-								</div>
 
-								<label class="control-label" for="un-selling-add">下架:</label>
-								<div class="add-tag">
-									<input type="radio" id="un-selling-add" checked="true" value="0" name="sell-add">
+					<div class="block-content info-content clearfix">
+						<div class="picDiv">
+							<div class="addImages">
+
+								<input type="file" class="file" id="fileInput" multiple="" accept="image/png, image/jpeg, image/gif, image/jpg">
+								<div class="text-detail">
+									<span>+</span>
+									<p>添加图片</p>
 								</div>
 							</div>
-							<div class="control-group">
-								<label class="control-label" style="width:100px;padding-left:40px;" for="show-image-add">商品展示图片:</label>
-								<div class="add-tag">
-									<a id="show-image-add" name="show-image-add">编辑图片</a>
-								</div>
-							</div>
-							<div class="control-group">
-								<label class="control-label" style="width:100px;padding-left:40px;" for="detail-image-add">商品详情图片:</label>
-								<div class="add-tag">
-									<a id="detail-image-add" name="detail-image-add">编辑图片</a>
-								</div>
-							</div>
-						</form>
+						</div>
 					</div>
 				</div>
 				<div class="block info-block" id="user-edit" style="display:none;">
-					<div class="navbar navbar-inner block-header">
+					<div class="navbar navbar-inner block-header" id="goods-edit-head">
 						<div class="block-title">修改商品:<span id="title-edit"></span></div>
 						<div class="header-buttons">
 							<button type="button" class="btn btn-primary" id="btn-save-edit">保存更改</button>
+							<button type="button" class="btn btn-cancel">取消</button>
+						</div>
+					</div>
+					<div class="navbar navbar-inner block-header" id="goods-add-head">
+						<div class="block-title">添加商品</div>
+						<div class="header-buttons">
+							<button type="button" class="btn btn-primary" id="btn-save-add">确定添加</button>
 							<button type="button" class="btn btn-cancel">取消</button>
 						</div>
 					</div>
@@ -236,15 +198,15 @@
 								</div>
 							</div>
 							<div class="control-group">
-								<label class="control-label" style="width:100px;padding-left:40px;" for="show-image-edit">商品展示图片:</label>
+								<label class="control-label" style="width:100px;padding-left:40px;cursor: default" for="show-image-edit">商品展示图片:</label>
 								<div class="add-tag">
-									<a id="show-image-edit" name="show-image-edit">编辑图片</a>
+									<a id="show-image-edit" style="cursor: pointer" name="show-image-edit">编辑图片</a>
 								</div>
 							</div>
 							<div class="control-group">
-								<label class="control-label" style="width:100px;padding-left:40px;" for="detail-image-edit">商品详情图片:</label>
+								<label class="control-label" style="width:100px;padding-left:40px;cursor: default" for="detail-image-edit">商品详情图片:</label>
 								<div class="add-tag">
-									<a id="detail-image-edit" name="detail-image-edit">编辑图片</a>
+									<a id="detail-image-edit" style="cursor: pointer" name="detail-image-edit">编辑图片</a>
 								</div>
 							</div>
 						</form>
