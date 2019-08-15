@@ -178,13 +178,25 @@ $(function (){
 	});
 });
 
-//clickSource : 0:查看1:添加2:修改, 0:展示图片,1:详情图片
+//modeSource : 0:查看1:编辑, 0:展示图片,1:详情图片
 var clickImageTag = function(clickSource){
 
 	$("#goods-image-list").show().siblings(".info-block").hide();
+	$(".imageDiv").remove();
+	if(0 == type){
+		$("#goods-image-list").find(".text-detail").hide();
+	}else{
+		$("#goods-image-list").find(".text-detail").show();
+	}
+	if(1 != type){
+		//TODO:展示图片
+	}
+
 
 	$(".btn-back").click(function(){
 		$("#user-edit").show().siblings(".info-block").hide();
+		if(imageSource){}
+
 		$("#goods-add-head").show().siblings(".block-header").hide();
 	});
 }
@@ -193,11 +205,11 @@ var clickImageTag = function(clickSource){
 function getObjectURL(file) {
 	var url = null ;
 	if (window.createObjectURL!=undefined) { // basic
-		url = window.createObjectURL(file) ;
+		url = window.createObjectURL(file);
 	} else if (window.URL!=undefined) { // mozilla(firefox)
-		url = window.URL.createObjectURL(file) ;
+		url = window.URL.createObjectURL(file);
 	} else if (window.webkitURL!=undefined) { // webkit or chrome
-		url = window.webkitURL.createObjectURL(file) ;
+		url = window.webkitURL.createObjectURL(file);
 	}
 	return url ;
 }
@@ -326,6 +338,8 @@ var userManage = {
 		$("#goods-edit-head").show().siblings(".block-header").hide();
 	},
 	addItemSubmit : function() {
+
+
 		$.dialog.tips('保存当前添加用户');
 	},
 	editItemSubmit : function() {

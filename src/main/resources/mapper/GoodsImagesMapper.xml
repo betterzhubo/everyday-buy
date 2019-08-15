@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seasoning.mapper.GoodsImagesMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.seasoning.entity.GoodsImages">
+        <id column="id" property="id" />
+        <result column="goods_id" property="goodsId" />
+        <result column="images_type" property="imagesType" />
+        <result column="images_url" property="imagesUrl" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, goods_id, images_type, images_url
+    </sql>
+
+</mapper>
