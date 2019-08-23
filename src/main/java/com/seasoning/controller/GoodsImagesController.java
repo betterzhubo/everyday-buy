@@ -1,16 +1,17 @@
 package com.seasoning.controller;
 
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.seasoning.base.BaseMsg;
 import com.seasoning.base.CommonConstant;
 import com.seasoning.base.MsgConstant;
-import com.seasoning.entity.Goods;
 import com.seasoning.entity.GoodsImages;
 import com.seasoning.service.GoodsImagesService;
 import com.seasoning.util.CommonUtil;
+import com.seasoning.util.FileUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -37,7 +38,7 @@ public class GoodsImagesController {
     @Autowired
     private GoodsImagesService goodsImagesService;
 
-    @GetMapping("/list")
+    @GetMapping("/list/{goodsId}/{imagesType}")
     @ResponseBody
     public BaseMsg getImagesList(@PathVariable Integer goodsId, @PathVariable Integer imagesType){
         QueryWrapper<GoodsImages> queryWrapper = new QueryWrapper<>();
@@ -49,55 +50,37 @@ public class GoodsImagesController {
         return CommonUtil.returnMsg(MsgConstant.OK, goodsImagesService.list(queryWrapper));
     }
 
-    @PostMapping("/upload")
-    public BaseMsg uploadImages(@RequestParam List<MultipartFile> files, @RequestParam Integer goodsId, @RequestParam Integer imagesType) throws IOException{
+    @PostMapping("/save")
+    @ResponseBody
+    public BaseMsg save(@RequestBody JSONObject param) throws IOException{
+        Integer goodsId = Integer.parseInt(param.get("goodsId").toString());
+        Integer imagesType = Integer.parseInt(param.get("imagesType").toString());
         Map<String, Object> map = new HashMap<>();
         map.put("goods_id", goodsId);
         map.put("images_type", imagesType);
         goodsImagesService.removeByMap(map);
 
-        String basePath = CommonConstant.IMAGES_PATH + "/" + goodsId + "/" + imagesType + "/";
-        File imgDir = new File(basePath);
-        if(!imgDir.exists()){
-            imgDir.mkdir();
-        }else{
-            File[] fileArr = imgDir.listFiles();
-            for(File f : fileArr){
-                f.delete();
-            }
-        }
-
+        JSONArray urls = param.getJSONArray("urls");
         List<GoodsImages> list = new ArrayList<>();
-        for(int i=0;i<files.size();i++){
-            MultipartFile uploadFile = files.get(i);
-            String fileName = uploadFile.getOriginalFilename();
-            String extName =fileName.substring(fileName.lastIndexOf("."));
-            String filePath = basePath + i + extName;
+        for(int i=0;i<urls.size();i++){
+            String url = urls.get(i).toString();
 
-            File file = new File(filePath);
-            try(InputStream inputStream = uploadFile.getInputStream();
-                OutputStream outputStream = new FileOutputStream(file)){
-                byte[] bs = new byte[1024];
-                int res = 0;
-                while((res = inputStream.read(bs)) != -1){
-                    outputStream.write(bs, 0, res);
-                }
-            }catch (IOException e){
-                log.error("写入文件失败!", e);
-                CommonUtil.returnMsg(MsgConstant.OK);
-            }
             GoodsImages goodsImages = new GoodsImages();
             goodsImages.setGoodsId(goodsId);
             goodsImages.setImagesType(imagesType);
-            goodsImages.setImagesUrl(filePath);
+            goodsImages.setImagesUrl(url);
             list.add(goodsImages);
         }
         goodsImagesService.saveBatch(list);
-        return CommonUtil.returnMsg(MsgConstant.FILE_GROUPIMG_ERROR);
+        return CommonUtil.returnMsg(MsgConstant.OK);
     }
 
+    @PostMapping("/upload")
+    @ResponseBody
+    public BaseMsg upload(@RequestParam MultipartFile uploadFile ) throws IOException{
 
-
-
+        String filePath = CommonConstant.IMAGES_PATH + uploadFile.getOriginalFilename();
+        return CommonUtil.returnMsg(FileUtil.copyFile(uploadFile, filePath)? MsgConstant.OK : MsgConstant.FILE_UPLODE_ERROR);
+    }
 }
 

@@ -1,20 +1,11 @@
 package com.seasoning.controller;
 
-
-import com.alibaba.fastjson.JSONObject;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.seasoning.base.BaseMsg;
 import com.seasoning.base.MsgConstant;
-import com.seasoning.entity.Goods;
 import com.seasoning.entity.GoodsType;
-import com.seasoning.request.GoodsAddRequest;
 import com.seasoning.service.GoodsTypeService;
 import com.seasoning.util.CommonUtil;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -44,11 +35,11 @@ public class GoodsTypeController {
     }
 
     @PostMapping("/add")
-    public BaseMsg add(@RequestBody JSONObject request) {
-//        if(result.hasErrors()){
-//            return CommonUtil.returnMsg(MsgConstant.PARAM_ERROR);
-//        }
-        GoodsType goodsType = JSONObject.toJavaObject(request, GoodsType.class);
+    public BaseMsg add(@RequestBody GoodsType goodsType ) {
+
+        if(goodsType == null){
+            return CommonUtil.returnMsg(MsgConstant.PARAM_ERROR);
+        }
         if(goodsTypeService.save(goodsType)){
             return CommonUtil.returnMsg(MsgConstant.OK, goodsType.getId());
         }

@@ -1,5 +1,7 @@
 package com.seasoning.controller;
 
+import com.seasoning.service.GoodsTypeService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -10,6 +12,9 @@ import org.springframework.web.bind.annotation.*;
  */
 @Controller
 public class LoginController {
+
+    @Autowired
+    private GoodsTypeService goodsTypeService;
 
     @GetMapping("/")
     public String index(){
@@ -27,6 +32,13 @@ public class LoginController {
     @GetMapping("/main")
     public String login(){
         return "main";
+    }
+
+    @GetMapping("/goods-table")
+    public String goodsTable(Model model){
+
+        model.addAttribute("goodsTypeList", goodsTypeService.list());
+        return "goods";
     }
 
 }

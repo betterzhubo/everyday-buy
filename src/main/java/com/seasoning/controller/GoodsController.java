@@ -12,6 +12,8 @@ import com.seasoning.request.GoodsAddRequest;
 import com.seasoning.request.GoodsSearchRequest;
 import com.seasoning.service.GoodsService;
 import com.seasoning.util.CommonUtil;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
@@ -27,6 +29,7 @@ import java.time.LocalDateTime;
  * @author better
  * @since 2019-07-31
  */
+@Slf4j
 @RestController
 @RequestMapping("/goods")
 public class GoodsController {
@@ -50,7 +53,7 @@ public class GoodsController {
     }
 
     @PutMapping("/update")
-    public BaseMsg update(Goods goods) {
+    public BaseMsg update(@RequestBody Goods goods) {
         if(null == goods.getId()){
             return CommonUtil.returnMsg(MsgConstant.PARAM_ERROR);
         }
@@ -63,13 +66,13 @@ public class GoodsController {
             updateWrapper.set("selling", goods.getSelling());
         }
         if(goods.getDetailImage() != null){
-            updateWrapper.set("detailImage", goods.getDetailImage());
+            updateWrapper.set("detail_image", goods.getDetailImage());
         }
         if(goods.getPrice() != null){
             updateWrapper.set("price", goods.getPrice());
         }
         if(goods.getShowImage() != null){
-            updateWrapper.set("price", goods.getShowImage());
+            updateWrapper.set("show_image", goods.getShowImage());
         }
         if(goods.getPurpose() != null){
             updateWrapper.set("purpose", goods.getPurpose());
@@ -77,11 +80,10 @@ public class GoodsController {
         if(goods.getGoodsTypeId() != null){
             updateWrapper.set("goods_type_id", goods.getGoodsTypeId());
         }
-        updateWrapper.set("updateTime", LocalDateTime.now());
         return CommonUtil.returnMsg(MsgConstant.OK,  goodsService.update(updateWrapper));
     }
 
-    @DeleteMapping("/delete")
+    @DeleteMapping("/delete/{goodsId}")
     public BaseMsg delete(@PathVariable Integer goodsId)  {
 
         return CommonUtil.returnMsg(MsgConstant.OK,  goodsService.removeById(goodsId));
@@ -91,13 +93,29 @@ public class GoodsController {
     public BaseMsg page(@RequestBody GoodsSearchRequest request)  {
 
         QueryWrapper<Goods> queryWrapper = new QueryWrapper<>();
-        Page<Goods> page = new Page<>();
+        if(StringUtils.isNotBlank(request.getGoodsName())){
+            queryWrapper.like("goods_name", request.getGoodsName());
+        }
+        if(request.getGoodsTypeId() != null && request.getGoodsTypeId() > 0){
+            queryWrapper.eq("goods_type_id", request.getGoodsTypeId());
+        }
+        if(request.getMinPrice() != null ){
+            queryWrapper.ge("price", request.getMinPrice());
+        }
+        if(request.getMaxPrice() != null){
+            queryWrapper.le("price", request.getMaxPrice());
+        }
+        if(request.getPurpose() != null && request.getPurpose() > -1){
+            queryWrapper.eq("purpose", request.getPurpose());
+        }
+
+        Page<Goods> page = new Page<>(1,20);
 
         IPage<Goods> resultPage = goodsService.page(page, queryWrapper);
         return CommonUtil.returnMsg(MsgConstant.OK, resultPage);
     }
 
-    @GetMapping("/get")
+    @GetMapping("/get/{goodsId}")
     public BaseMsg get(@PathVariable Integer goodsId){
         Goods goods = goodsService.getById(goodsId);
         return CommonUtil.returnMsg(MsgConstant.OK, goods);

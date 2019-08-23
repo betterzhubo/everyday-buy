@@ -7,8 +7,6 @@
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="robots" content="all,follow">
-    <link rel="stylesheet" type="text/css" href="css/jsgrid.min.css" />
-    <link rel="stylesheet" type="text/css" href="css/jsgrid-theme.min.css" />
     <link rel="stylesheet" href="jquery-ui-1.11.4/jquery-ui.min.css">
 
     <!-- Bootstrap CSS-->
@@ -17,8 +15,6 @@
     <link rel="stylesheet" href="vendor/font-awesome/css/font-awesome.min.css">
     <!-- Custom Font Icons CSS-->
     <link rel="stylesheet" href="css/font.css">
-    <!-- Google fonts - Muli-->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Muli:300,400,700">
     <!-- theme stylesheet-->
     <link rel="stylesheet" href="css/style.default.css" id="theme-stylesheet">
     <!-- Custom stylesheet - for your changes-->
@@ -101,10 +97,10 @@
       <nav id="sidebar">
         <!-- Sidebar Navidation Menus--><span class="heading">菜单</span>
         <ul class="list-unstyled">
-          <li><a href="main.html"> <i class="icon-home"></i>订单 </a></li>
-          <li class="active"><a href="main.html"> <i class="icon-grid"></i>商品 </a></li>
-          <li><a href="charts.html"> <i class="fa fa-bar-chart"></i>商品类型 </a></li>
-          <li><a href="forms.html"> <i class="icon-padnote"></i>demo </a></li>
+          <li><a target="grid" href="main.html"> <i class="icon-home"></i>订单 </a></li>
+          <li class="active"><a target="grid" href="goods-table" > <i class="icon-grid"></i>商品 </a></li>
+          <li><a target="grid" href="charts.html"> <i class="fa fa-bar-chart"></i>商品类型 </a></li>
+          <li><a target="grid" href="forms.html"> <i class="icon-padnote"></i>demo </a></li>
 
         </ul>
       </nav>
@@ -117,47 +113,10 @@
           </div>
         </div>
         <section class="no-padding-top">
-          <div class="container-fluid">
-              <div id="jsGrid" class="col-lg-12"></div>
-          </div>
-        </section>
+            <iframe name="grid" src="goods-table" width="100%" height="1000px">
 
-        <div id="detailsDialog">
-          <form id="detailsForm">
-            <div class="details-form-field">
-              <label for="name">Name:</label>
-              <input id="name" name="name" type="text" />
-            </div>
-            <div class="details-form-field">
-              <label for="age">Age:</label>
-              <input id="age" name="age" type="number" />
-            </div>
-            <div class="details-form-field">
-              <label for="address">Address:</label>
-              <input id="address" name="address" type="text" />
-            </div>
-            <div class="details-form-field">
-              <label for="country">Country:</label>
-              <select id="country" name="country">
-                <option value="">(Select)</option>
-                <option value="1">United States</option>
-                <option value="2">Canada</option>
-                <option value="3">United Kingdom</option>
-                <option value="4">France</option>
-                <option value="5">Brazil</option>
-                <option value="6">China</option>
-                <option value="7">Russia</option>
-              </select>
-            </div>
-            <div class="details-form-field">
-              <label for="married">Is Married</label>
-              <input id="married" name="married" type="checkbox" />
-            </div>
-            <div class="details-form-field">
-              <button type="submit" id="save">Save</button>
-            </div>
-          </form>
-        </div>
+            </iframe>
+        </section>
         <footer class="footer">
           <div class="footer__block block no-margin-bottom">
             <div class="container-fluid text-center">
@@ -178,105 +137,5 @@
     <script src="vendor/jquery-validation/jquery.validate.min.js"></script>
     <script src="js/front.js"></script>
     <script src="js/db.js"></script>
-    <script src="/js/jsgrid/jsgrid.min.js"></script>
-    <script src="/js/jsgrid/i18n/jsgrid-zh-cn.js"></script>
-
-    <script>
-
-      $(function() {
-
-        $("#jsGrid").jsGrid({
-          height: "90%",
-          width: "100%",
-          sorting: true,
-          autoload: true,
-          paging: true,
-          deleteConfirm: function(item) {
-            return "The client \"" + item.Name + "\" will be removed. Are you sure?";
-          },
-          rowClick: function(args){
-            showDetailsDialog("Edit", args.item);
-          },
-
-          data: db.clients,
-
-          fields: [
-            { name: "Name", width: 150, itemTemplate:"展示图片"},
-            { name: "Age", type: "number", width: 50 },
-            { name: "Address", type: "text", width: 200 },
-            { name: "Country", type: "select", items: db.countries, valueField: "Id", textField: "Name" },
-            { name: "Married", type: "checkbox", title: "Is Married" },
-            {
-              type: "control",
-              modeSwitchButton: false,
-              editButton: false,
-              headerTemplate: function() {
-                return $("<button>").attr("type", "button").text("Add")
-                        .on("click", function () {
-                          showDetailsDialog("Add", {});
-                        });
-              }}
-          ]
-        });
-      });
-
-      $("#detailsDialog").dialog({
-        autoOpen: false,
-        width: 400,
-        close: function() {
-          $("#detailsForm").validate().resetForm();
-          $("#detailsForm").find(".error").removeClass("error");
-        }
-      });
-
-      $("#detailsForm").validate({
-        rules: {
-          name: "required",
-          age: { required: true, range: [18, 150] },
-          address: { required: true, minlength: 10 },
-          country: "required"
-        },
-        messages: {
-          name: "Please enter name",
-          age: "Please enter valid age",
-          address: "Please enter address (more than 10 chars)",
-          country: "Please select country"
-        },
-        submitHandler: function() {
-          formSubmitHandler();
-        }
-      });
-
-      var formSubmitHandler = $.noop;
-
-
-      var showDetailsDialog = function(dialogType, client) {
-        $("#name").val(client.Name);
-        $("#age").val(client.Age);
-        $("#address").val(client.Address);
-        $("#country").val(client.Country);
-        $("#married").prop("checked", client.Married);
-        formSubmitHandler = function() {
-          saveClient(client, dialogType === "Add");
-        };
-
-        $("#detailsDialog").dialog("option", "title", dialogType + " Client")
-                .dialog("open");
-      };
-
-      var saveClient = function(client, isNew) {
-        $.extend(client, {
-          Name: $("#name").val(),
-          Age: parseInt($("#age").val(), 10),
-          Address: $("#address").val(),
-          Country: parseInt($("#country").val(), 10),
-          Married: $("#married").is(":checked")
-        });
-
-        $("#jsGrid").jsGrid(isNew ? "insertItem" : "updateItem", client);
-
-        $("#detailsDialog").dialog("close");
-      };
-    </script>
   </body>
 </html>
