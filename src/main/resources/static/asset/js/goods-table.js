@@ -1,7 +1,7 @@
 $(function (){
 
 	var $wrapper = $('#div-table-container');
-	var $table = $('#table-user');
+	var $table = $('#table-goods');
 	
 	var _table = $table.dataTable($.extend(true,{},CONSTANT.DATA_TABLES.DEFAULT_OPTION, {
 		ajax : function(data, callback, settings) {//ajax配置为function,手动调用异步查询
@@ -152,7 +152,7 @@ $(function (){
 			type: "POST",
 			url: "goods-images/save",
 			traditional:true,
-			cache: false,	//禁用缓存
+			cache: false,	//禁用缓存goodsTypeList
 			contentType: "application/json;charset=utf-8;",
 			data: JSON.stringify(param),	//传入已封装的参数
 			dataType: "json",

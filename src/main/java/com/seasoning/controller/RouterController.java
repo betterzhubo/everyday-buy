@@ -1,17 +1,21 @@
 package com.seasoning.controller;
 
 import com.seasoning.service.GoodsTypeService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 /**
  * @Authot:better
  * @Date:2019/8/5 11:56
  */
 @Controller
-public class LoginController {
+public class RouterController {
 
     @Autowired
     private GoodsTypeService goodsTypeService;
@@ -23,14 +27,18 @@ public class LoginController {
 
 
     @PostMapping("/login")
-    public String login(String loginPassword, Model model){
-        System.out.println(loginPassword);
-        model.addAttribute("test", "test123");
+    public String login(HttpServletRequest request, String loginPassword, Model model){
+        if(!StringUtils.equals("123123", loginPassword)){
+            model.addAttribute("tips","密码错误!");
+            return "login";
+        }
+        HttpSession session = request.getSession();
+        session.setAttribute("mark", "1");
         return "main";
     }
 
     @GetMapping("/main")
-    public String login(){
+    public String main(){
         return "main";
     }
 
@@ -41,4 +49,15 @@ public class LoginController {
         return "goods";
     }
 
+    @GetMapping("/goods-type")
+    public String goodsType(){
+
+        return "goods-type";
+    }
+
+    @GetMapping("/order")
+    public String orderTable(){
+
+        return "order";
+    }
 }

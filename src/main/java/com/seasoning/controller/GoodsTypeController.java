@@ -1,5 +1,6 @@
 package com.seasoning.controller;
 
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.seasoning.base.BaseMsg;
 import com.seasoning.base.MsgConstant;
 import com.seasoning.entity.GoodsType;
@@ -28,7 +29,7 @@ public class GoodsTypeController {
         return CommonUtil.returnMsg(MsgConstant.OK, goodsTypeService.list());
     }
 
-    @DeleteMapping("/delete")
+    @DeleteMapping("/delete/{goodsTypeId}")
     public BaseMsg delete(@PathVariable Integer goodsTypeId)  {
 
         return CommonUtil.returnMsg(MsgConstant.OK,  goodsTypeService.removeById(goodsTypeId));
@@ -51,8 +52,13 @@ public class GoodsTypeController {
         if(null == goodsType.getId()){
             return CommonUtil.returnMsg(MsgConstant.PARAM_ERROR);
         }
-        if(goodsTypeService.save(goodsType)){
-            return CommonUtil.returnMsg(MsgConstant.OK, goodsType.getId());
+        UpdateWrapper updateWrapper = new UpdateWrapper();
+        updateWrapper.eq("id", goodsType.getId());
+        if(goodsType.getGoodsType() != null){
+            updateWrapper.set("goods_type", goodsType.getGoodsType());
+        }
+        if(goodsTypeService.update(updateWrapper)){
+            return CommonUtil.returnMsg(MsgConstant.OK);
         }
         return CommonUtil.returnMsg(MsgConstant.PROGRAM_ERROR);
     }

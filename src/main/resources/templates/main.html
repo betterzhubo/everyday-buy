@@ -3,11 +3,10 @@
   <head> 
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title></title>
+    <title>成天买</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="robots" content="all,follow">
-    <link rel="stylesheet" href="jquery-ui-1.11.4/jquery-ui.min.css">
 
     <!-- Bootstrap CSS-->
     <link rel="stylesheet" href="vendor/bootstrap/css/bootstrap.min.css">
@@ -97,9 +96,9 @@
       <nav id="sidebar">
         <!-- Sidebar Navidation Menus--><span class="heading">菜单</span>
         <ul class="list-unstyled">
-          <li><a target="grid" href="main.html"> <i class="icon-home"></i>订单 </a></li>
           <li class="active"><a target="grid" href="goods-table" > <i class="icon-grid"></i>商品 </a></li>
-          <li><a target="grid" href="charts.html"> <i class="fa fa-bar-chart"></i>商品类型 </a></li>
+          <li><a target="grid" href="goods-type"> <i class="fa fa-bar-chart"></i>商品类型 </a></li>
+          <li><a target="grid" href="order"> <i class="icon-table"></i>订单 </a></li>
           <li><a target="grid" href="forms.html"> <i class="icon-padnote"></i>demo </a></li>
 
         </ul>
@@ -128,14 +127,19 @@
       </div>
     </div>
     <!-- JavaScript files-->
-    <script src="jquery-ui-1.11.4/external/jquery/jquery.js"></script>
-    <script src="jquery-ui-1.11.4/jquery-ui.min.js"></script>
+    <script src="vendor/jquery/jquery.min.js"></script>
     <script src="vendor/popper.js/umd/popper.min.js"> </script>
     <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
     <script src="vendor/jquery.cookie/jquery.cookie.js"> </script>
     <script src="vendor/chart.js/Chart.min.js"></script>
     <script src="vendor/jquery-validation/jquery.validate.min.js"></script>
     <script src="js/front.js"></script>
-    <script src="js/db.js"></script>
+
+    <script>
+        $("#sidebar li").click(function(){
+            $(this).addClass("active").siblings().removeClass("active");
+        })
+
+    </script>
   </body>
 </html>

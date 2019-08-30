@@ -1,6 +1,6 @@
 <configuration>
 
-    <property name="logging.basepath" value="../log"/>
+    <property name="logging.basepath" value="log"/>
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
