@@ -1,6 +1,7 @@
 package com.seasoning.controller;
 
 import com.seasoning.service.GoodsTypeService;
+import com.seasoning.service.UserService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -19,6 +20,9 @@ public class RouterController {
 
     @Autowired
     private GoodsTypeService goodsTypeService;
+
+    @Autowired
+    private UserService userService;
 
     @GetMapping("/")
     public String index(){
@@ -56,8 +60,8 @@ public class RouterController {
     }
 
     @GetMapping("/order")
-    public String orderTable(){
-
+    public String orderTable(Model model){
+        model.addAttribute("userList", userService.list());
         return "order";
     }
 }

@@ -12,16 +12,11 @@ import java.util.List;
 
 public class CodeGenerator {
 
-    public static String tableName = "user";
+    public static String tableName = "goods_images";
 
     public static void main(String[] args) {
 
-        String[] tableArr = tableName.split("_");
-        String noPrefix = "";
-        for(String e : tableArr){
-            noPrefix += e.substring(0,1).toUpperCase() + e.substring(1);
-        }
-//        String noPrefix = tableName.substring(0,1).toUpperCase() + tableName.substring(1);
+        String noPrefix = tableName.substring(0,1).toUpperCase() + tableName.substring(1);
 
         // 代码生成器
         AutoGenerator mpg = new AutoGenerator();
@@ -45,10 +40,10 @@ public class CodeGenerator {
 
         // 数据源配置
         DataSourceConfig dsc = new DataSourceConfig();
-        dsc.setUrl("jdbc:mysql://127.0.0.1:3306/everyday_buy?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=GMT%2B8");
+        dsc.setUrl("jdbc:mysql://127.0.0.1:3306/equipment?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=GMT%2B8");
         dsc.setDriverName("com.mysql.cj.jdbc.Driver");
         dsc.setUsername("root");
-        dsc.setPassword("password");
+        dsc.setPassword("123456");
         mpg.setDataSource(dsc);
 
         // 包配置

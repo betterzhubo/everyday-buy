@@ -100,7 +100,6 @@ $(function (){
             var $btnEdit = $('<button type="button" class="btn btn-small btn-primary btn-edit">修改</button>');
             var $btnDel = $('<button type="button" class="btn btn-small btn-danger btn-del">删除</button>');
             $('td', row).eq(5).append($btnEdit).append($btnDel);
-            
         },
         "drawCallback": function( settings ) {
         	//渲染完毕后的回调
@@ -163,7 +162,6 @@ $(function (){
 				}else{
 					$.dialog.alert("保存失败, error code => "+ result.code);
 				}
-
 			},
 			error: function(err) {
 				$.dialog.tips("保存失败");
@@ -217,7 +215,6 @@ $(function (){
 	});
 });
 
-
 function bigImgShow(imgUrl){
     $("#big-img").attr("src", imgUrl);//设置#big-img元素的src属性
 
@@ -256,7 +253,6 @@ function bigImgShow(imgUrl){
     });
 }
 var bigImgShowTag = function(imgUrl){
-
     return $("<a>").text(imgUrl).click(function () {
         bigImgShow("image/"+imgUrl);
     });
@@ -290,7 +286,6 @@ var clickImageTag = function(operateType, imageType){
 		$("#btn-save-img").show();
 	}
 
-
 	//展示对应图片
 	$.ajax({
 		url: '/goods-images/list/'+goodsTable.currentItem.id+"/"+imageType,
@@ -308,7 +303,6 @@ var clickImageTag = function(operateType, imageType){
 			$.dialog.tips("获取图片失败!");
 		}
 	});
-
 }
 var showImageList = function(fileList, operateType){
 	var picDiv = $("#fileInput").parents(".picDiv");
@@ -328,7 +322,6 @@ var showImageList = function(fileList, operateType){
 			//图片属性
 			imgObjPreview.css({"display":"block", "width":"160px", "height":"130px"});
 			imgObjPreview.attr("src", fileList[i].imagesUrl);
-
 		}
 	}
 	if(operateType == 0) return;
@@ -337,7 +330,6 @@ var showImageList = function(fileList, operateType){
 		var _this = $(this);
 		_this.parents(".imageDiv").remove();
 	});
-
 }
 
 $("#upload-file").change(function () {
@@ -364,7 +356,6 @@ $("#upload-file").change(function () {
 			$.dialog.tips("上传图片失败!");
         }
     });
-
 });
 
 $(".file").change(function() {
@@ -464,9 +455,10 @@ var goodsTable = {
 		param.minPrice = $("#min-price-search").val();
 		param.maxPrice = $("#max-price-search").val();
 		param.purpose = $("#purpose-search").val();
-		param.selling = $("#selling-search").val() == 1;
+		var sellingSearch = $("#selling-search").val();
+		param.selling = sellingSearch ? sellingSearch == 1 : sellingSearch;
 		//组装分页参数
-		param.startIndex = data.start;
+		param.current = data.start / data.length;
 		param.pageSize = data.length;
 
 		return param;
@@ -492,15 +484,11 @@ var goodsTable = {
         }else{
 			$("#show-image-view").html("");
 		}
-
-
-
 	},
 	addItemInit : function() {
 		$("#form-edit")[0].reset();
 		$("#user-edit").show().siblings(".info-block").hide();
 		$("#goods-add-head").show().siblings(".block-header").hide();
-
 		$("#show-image-edit").html("");
 		$("#banner-image-div").hide();
 		$("#detail-image-div").hide();
@@ -590,14 +578,12 @@ var goodsTable = {
 						}else{
 							$.dialog.tips('执行删除失败,code='+result.code);
 						}
-
 					},
 					error: function (err) {
 						$.dialog.tips("删除失败!");
 						console.log(err)
 					}
 				});
-
 			});
 		}else{
 			$.dialog.alert('请先选中要操作的行');

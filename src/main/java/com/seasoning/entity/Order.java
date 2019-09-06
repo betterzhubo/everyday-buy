@@ -38,14 +38,14 @@ public class Order implements Serializable {
     @TableField("consignee_name")
     private String consigneeName;
 
-    @TableField("consignee_mobiles")
-    private String consigneeMobiles;
+    @TableField("consignee_mobile")
+    private String consigneeMobile;
 
     /**
      * 1,待支付;2,待配送;3,配送中;4,已完成;5,已取消
      */
-    @TableField("order_type")
-    private Integer orderType;
+    @TableField("order_status")
+    private Integer orderStatus;
 
     @TableField("consignee_address")
     private String consigneeAddress;

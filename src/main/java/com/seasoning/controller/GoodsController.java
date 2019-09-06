@@ -108,8 +108,11 @@ public class GoodsController {
         if(request.getPurpose() != null && request.getPurpose() > -1){
             queryWrapper.eq("purpose", request.getPurpose());
         }
+        if(request.getSelling() != null){
+            queryWrapper.eq("selling", request.getSelling());
+        }
 
-        Page<Goods> page = new Page<>(1,20);
+        Page<Goods> page = new Page<>(request.getCurrent()+1, request.getPageSize());
 
         IPage<Goods> resultPage = goodsService.page(page, queryWrapper);
         return CommonUtil.returnMsg(MsgConstant.OK, resultPage);

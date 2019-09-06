@@ -34,7 +34,7 @@ public class Goods implements Serializable {
     private String goodsName;
 
     /**
-     * 0:餐饮,1:自由
+     * 0:餐饮,1:自用
      */
     @TableField("purpose")
     private Integer purpose;

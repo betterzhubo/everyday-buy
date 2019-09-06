@@ -1,10 +1,14 @@
 package com.seasoning.util;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
+import com.alibaba.fastjson.JSON;
 import com.seasoning.base.BaseMsg;
 import com.seasoning.base.MsgConstant;
 import org.apache.commons.lang3.StringUtils;
+
+import java.io.IOException;
 
 /**
  * 系统工具类
@@ -12,6 +16,20 @@ import org.apache.commons.lang3.StringUtils;
  * @since 2016年11月23日
  */
 public class CommonUtil {
+
+	public static void updateResponse(MsgConstant msgConstant, HttpServletResponse response, Exception ex) throws IOException {
+		BaseMsg msg = new BaseMsg();
+		msg.setCode(msgConstant.getCode());
+		msg.setMsg(msgConstant.getDesc());
+		if(null == ex){
+			msg.setData("");
+		}else{
+			msg.setData(ex.getMessage());
+		}
+		response.setStatus(HttpServletResponse.SC_OK);
+		response.setContentType("application/json;charset=UTF-8");
+		response.getWriter().write(JSON.toJSONString(msg));
+	}
 	
 	/**
 	 * 请求返回方法

@@ -24,4 +24,8 @@ public class GoodsSearchRequest {
     private Integer goodsTypeId;
 
     private Boolean selling;
+
+    private Integer current;
+
+    private Integer pageSize;
 }

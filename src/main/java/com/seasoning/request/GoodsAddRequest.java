@@ -29,7 +29,6 @@ public class GoodsAddRequest {
     private Integer goodsTypeId;
     @NotBlank(message = "参数不能为空")
     private String showImage;
-    @NotBlank(message = "参数不能为空")
     private String detailImage;
 
     private Boolean selling;

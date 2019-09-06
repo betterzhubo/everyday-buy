@@ -14,8 +14,12 @@ public class OrderSearchRequest {
 
     private String orderId;
 
-    private Integer userId;
+    private String userName;
 
-    private Integer orderType;
+    private Integer orderStatus;
+
+    private Integer current;
+
+    private Integer pageSize;
 
 }

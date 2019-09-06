@@ -1,6 +1,7 @@
 package com.seasoning.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.seasoning.entity.Goods;
 
 /**
  * <p>
@@ -8,7 +9,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * </p>
  *
  * @author better
- * @since 2019-07-28
+ * @since 2019-07-31
  */
 public interface GoodsMapper extends BaseMapper<Goods> {
 
