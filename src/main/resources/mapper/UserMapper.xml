@@ -16,4 +16,8 @@
         id, name, password, update_time, create_time
     </sql>
 
+
+    <select id="selectIdByName" parameterType="string" resultType="int">
+      select id FROM `user` where `name` like #{name}
+    </select>
 </mapper>

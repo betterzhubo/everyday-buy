@@ -1,7 +1,9 @@
 package com.seasoning.mapper;
 
-import com.seasoning.entity.User;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.seasoning.entity.User;
+
+import java.util.List;
 
 /**
  * <p>
@@ -12,5 +14,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * @since 2019-07-26
  */
 public interface UserMapper extends BaseMapper<User> {
+
+    public List<Integer> selectIdByName(String name);
 
 }

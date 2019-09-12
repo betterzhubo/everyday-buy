@@ -1,10 +1,12 @@
 package com.seasoning.service.impl;
 
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.seasoning.entity.User;
 import com.seasoning.mapper.UserMapper;
 import com.seasoning.service.UserService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * <p>
@@ -17,4 +19,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
 
+    @Override
+    public List<Integer> getIdByName(String name){
+        return baseMapper.selectIdByName(name);
+    }
 }

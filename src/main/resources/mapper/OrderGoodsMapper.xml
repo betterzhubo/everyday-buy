@@ -4,7 +4,8 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.seasoning.entity.OrderGoods">
-        <id column="order_id" property="orderId" />
+        <id column="id" property="id" />
+        <result column="order_id" property="orderId" />
         <result column="goods_id" property="goodsId" />
         <result column="goods_name" property="goodsName" />
         <result column="goods_count" property="goodsCount" />
@@ -15,7 +16,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        order_id, goods_id, goods_name, goods_count, goods_price, update_time, create_time
+        id, order_id, goods_id, goods_name, goods_count, goods_price, update_time, create_time
     </sql>
 
 </mapper>

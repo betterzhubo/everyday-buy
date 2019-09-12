@@ -5,7 +5,11 @@ import com.alibaba.fastjson.JSON;
 import com.seasoning.entity.User;
 import com.seasoning.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.Mapping;
+import org.springframework.web.bind.annotation.PostMapping;
+
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -18,13 +22,12 @@ import java.util.List;
  * @since 2019-07-26
  */
 @RestController
-@RequestMapping("/user")
 public class UserController {
 
     @Autowired
     private UserService userService;
 
-    @GetMapping("/list")
+    @GetMapping("/getUserList")
     public String getUserList(){
         List<User> list = userService.list();
         System.out.println(JSON.toJSONString(list));

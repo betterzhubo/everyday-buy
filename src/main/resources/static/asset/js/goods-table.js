@@ -176,7 +176,10 @@ $(function (){
 		//获取该行对应的数据
 		var item = _table.row($(this).closest('tr')).data();
 		goodsTable.currentItem = item;
-		goodsTable.showItemDetail(item);
+		if(event.target.nodeName !== "BUTTON"){
+			goodsTable.showItemDetail(item);
+		}
+
     });
 	
 	$table.on("change",":checkbox",function() {
@@ -431,16 +434,16 @@ var goodsTable = {
 		//组装排序参数
 		if (data.order&&data.order.length&&data.order[0]) {
 			switch (data.order[0].column) {
-			case 1:
+			case 0:
 				param.orderColumn = "goodsName";
 				break;
-			case 2:
+			case 1:
 				param.orderColumn = "price";
 				break;
-			case 3:
+			case 2:
 				param.orderColumn = "goodsTypeId";
 				break;
-			case 4:
+			case 3:
 				param.orderColumn = "purpose";
 				break;
 			default:
@@ -520,7 +523,7 @@ var goodsTable = {
 			success: function (result) {
 				$.dialog.tips('保存当前新增商品');
 				$(".btn-cancel").click();
-				$('#table-user').DataTable().draw("full-hold");
+				$('#table-goods').DataTable().draw("full-hold");
 			},
 			error: function (err) {
 				$.dialog.tips("新增失败!");
