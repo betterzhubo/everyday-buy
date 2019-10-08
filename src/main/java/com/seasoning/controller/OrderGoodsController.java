@@ -27,11 +27,12 @@ public class OrderGoodsController {
 
     @GetMapping("/get/{orderId}")
     @ResponseBody
-    public BaseMsg getImagesList(@PathVariable String orderId){
+    public BaseMsg getOrderGoodsList(@PathVariable String orderId){
         QueryWrapper<OrderGoods> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("order_id", orderId);
 
         return CommonUtil.returnMsg(MsgConstant.OK, orderGoodsService.list(queryWrapper));
     }
+
 }
 

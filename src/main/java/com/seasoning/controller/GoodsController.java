@@ -19,7 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
+import javax.validation.Valid;
 
 /**
  * <p>
@@ -38,8 +38,9 @@ public class GoodsController {
     private GoodsService goodsService;
 
     @PostMapping("/add")
-    public BaseMsg add(@RequestBody GoodsAddRequest request, BindingResult result) {
+    public BaseMsg add(@RequestBody @Valid GoodsAddRequest request, BindingResult result) {
         if(result.hasErrors()){
+            log.error("参数错误！", result.getAllErrors().get(0));
             return CommonUtil.returnMsg(MsgConstant.PARAM_ERROR);
         }
 

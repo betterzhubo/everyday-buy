@@ -30,9 +30,6 @@ public class Order implements Serializable {
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
-    @TableField("order_id")
-    private String orderId;
-
     @TableField("user_id")
     private Integer userId;
 

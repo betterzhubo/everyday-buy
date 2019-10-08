@@ -45,7 +45,7 @@ $(function (){
 		},
         columns: [
             {
-            	data: "orderId",
+            	data: "id",
 				width : "150px"
             },
 			{
@@ -124,7 +124,7 @@ $(function (){
 		var item = _table.row($(this).closest('tr')).data();
 		orderTable.currentItem = item;
 		if(event.target.nodeName !== "BUTTON" && item){
-			orderTable.showItemDetail(item.orderId);
+			orderTable.showItemDetail(item.id);
 		}
     });
 	
@@ -155,12 +155,13 @@ $(function (){
 	});
 
 	$(".btn-cancel").click(function(){
-		orderTable.showItemDetail(orderTable.currentItem.orderId);
+		orderTable.showItemDetail(orderTable.currentItem.id);
 	});
 });
 
 var getOrderInfo = function(){
 	var orderInfo = {};
+	orderInfo.id = orderTable.currentItem.id;
 	orderInfo.consigneeName = $("#consignee-name-edit").val();
 	orderInfo.consigneeMobile = $("#consignee-mobile-edit").val();
 	orderInfo.consigneeAddress = $("#consignee-address-edit").val();
@@ -176,7 +177,7 @@ var orderTable = {
 		if (data.order&&data.order.length&&data.order[0]) {
 			switch (data.order[0].column) {
 			case 0:
-				param.orderColumn = "orderId";
+				param.orderColumn = "id";
 				break;
 			case 1:
 				param.orderColumn = "userId";
@@ -194,24 +195,23 @@ var orderTable = {
 				param.orderColumn = "orderStatus";
 				break;
 			default:
-				param.orderColumn = "orderId";
+				param.orderColumn = "createTime";
 			}
 			param.orderDir = data.order[0].dir;
 		}
 		//组装查询参数
-		param.orderId = $("#order-id-search").val();
+		param.id = $("#id-search").val();
 		param.userName = $("#user-name-search").val();
 		param.orderStatus = $("#order-status-search").val();
 		//组装分页参数
 		param.current = data.start / data.length;
 		param.pageSize = data.length;
-
 		return param;
 	},
-	showItemDetail : function(orderId) {
+	showItemDetail : function(id) {
 		$.ajax({
 			type: "GET",
-			url: "order-goods/get/"+orderId,
+			url: "order-goods/get/"+id,
 			cache: false,	//禁用缓存
 			contentType: "application/json;charset=utf-8;",
 			dataType: "json",
@@ -221,7 +221,7 @@ var orderTable = {
 					return;
 				}
 				$("#order-goods-view").show().siblings(".info-block").hide();
-				if (!orderId) {
+				if (!id) {
 					$("#order-goods-view .prop-value").text("");
 					return;
 				}
@@ -234,9 +234,7 @@ var orderTable = {
 
 				var list = result.data;
 				for(var i=0;i<list.length;i++) {
-
 					var goodsItem = goodsItmeDom.clone().attr("id", "order-goods-item"+i).show();
-
 					goodsItem.find("[name=goods-name-view]").text(list[i].goodsName);
 					goodsItem.find("[name=price-view]").text(list[i].goodsPrice);
 					goodsItem.find("[name=goods-count-view]").text(list[i].goodsCount);
@@ -247,8 +245,6 @@ var orderTable = {
 				console.log(err)
 			}
 		});
-
-
 	},
 	editItemInit : function(item) {
 		if (!item) return;
@@ -262,7 +258,6 @@ var orderTable = {
 	},
 	editItemSubmit : function() {
 		var orderInfo = getOrderInfo();
-		orderInfo.id = orderTable.currentItem.id;
 		$.ajax({
 			type: "PUT",
 			url: "order/update",
