@@ -1,7 +1,10 @@
 package com.seasoning.service;
 
+import com.seasoning.entity.ShopingCartGoods;
 import com.seasoning.entity.ShoppingCart;
 import com.baomidou.mybatisplus.extension.service.IService;
+
+import java.util.List;
 
 /**
  * <p>
@@ -13,4 +16,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface ShoppingCartService extends IService<ShoppingCart> {
 
+    List<ShopingCartGoods> getListByUserId(int userId);
 }

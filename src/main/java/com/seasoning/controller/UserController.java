@@ -34,6 +34,11 @@ public class UserController {
         return "success";
     }
 
+    public String login(){
+
+        return "";
+    }
+
 
 }
 

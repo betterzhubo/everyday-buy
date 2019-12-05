@@ -58,7 +58,7 @@ public class GoodsController {
         if(null == goods.getId()){
             return CommonUtil.returnMsg(MsgConstant.PARAM_ERROR);
         }
-        UpdateWrapper updateWrapper = new UpdateWrapper();
+        UpdateWrapper<Goods> updateWrapper = new UpdateWrapper();
         updateWrapper.eq("id", goods.getId());
         if(goods.getGoodsName() != null){
             updateWrapper.set("goods_name", goods.getGoodsName());

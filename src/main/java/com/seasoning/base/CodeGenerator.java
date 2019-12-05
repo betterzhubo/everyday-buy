@@ -12,7 +12,7 @@ import java.util.List;
 
 public class CodeGenerator {
 
-    public static String tableName = "goods_images";
+    public static String tableName = "shipping_address";
 
     public static void main(String[] args) {
 
@@ -40,10 +40,10 @@ public class CodeGenerator {
 
         // 数据源配置
         DataSourceConfig dsc = new DataSourceConfig();
-        dsc.setUrl("jdbc:mysql://127.0.0.1:3306/equipment?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=GMT%2B8");
+        dsc.setUrl("jdbc:mysql://127.0.0.1:3306/everyday_buy?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=GMT%2B8");
         dsc.setDriverName("com.mysql.cj.jdbc.Driver");
         dsc.setUsername("root");
-        dsc.setPassword("123456");
+        dsc.setPassword("password");
         mpg.setDataSource(dsc);
 
         // 包配置

@@ -44,5 +44,4 @@ public class ShoppingCart implements Serializable {
     @TableField("create_time")
     private LocalDateTime createTime;
 
-
 }

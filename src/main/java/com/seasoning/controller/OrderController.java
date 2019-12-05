@@ -23,6 +23,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -95,7 +97,7 @@ public class OrderController {
     @PostMapping("/add")
     public BaseMsg add(@RequestBody @Valid AddOrderRequest request, BindingResult result){
         if(result.hasErrors()){
-            log.error("参数错误！", result.getAllErrors().get(0));
+            log.error("参数错误！", result.getAllErrors().get(0).getDefaultMessage());
             return CommonUtil.returnMsg(MsgConstant.PARAM_ERROR);
         }
         Order order = new Order();
@@ -117,6 +119,24 @@ public class OrderController {
             return CommonUtil.returnMsg(MsgConstant.SQL_ERROR, "订单商品保存失败！");
         }
         return CommonUtil.returnMsg(MsgConstant.OK, id);
+    }
+
+    @GetMapping("/get/{orderId}")
+    public BaseMsg get(@PathVariable int id){
+        if(id <= 0){
+            return CommonUtil.returnMsg(MsgConstant.PARAM_ERROR);
+        }
+        Order order = orderService.getById(id);
+        if(1 == order.getOrderStatus()){
+            Duration duration = Duration.between(order.getCreateTime(), LocalDateTime.now());
+            if(duration.getSeconds() > 600){
+                UpdateWrapper<Order> updateWrapper = new UpdateWrapper<>();
+                updateWrapper .eq("id",id).set("order_status", 0);
+                orderService.update(updateWrapper);
+                order.setOrderStatus(0);
+            }
+        }
+        return CommonUtil.returnMsg(MsgConstant.OK, order);
     }
 
 }

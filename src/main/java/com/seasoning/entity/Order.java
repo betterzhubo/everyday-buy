@@ -40,7 +40,7 @@ public class Order implements Serializable {
     private String consigneeMobile;
 
     /**
-     * 1,待支付;2,待配送;3,配送中;4,已完成;5,已取消
+     * 0,已删除;1,待支付;2,待配送;3,配送中;4,已完成;5,已取消
      */
     @TableField("order_status")
     private Integer orderStatus;

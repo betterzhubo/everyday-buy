@@ -32,7 +32,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
         excludeList.add("/font/**");
         excludeList.add("/vendor/**");
         excludeList.add("/icons-reference/**");
-        registry.addInterceptor(loginInterceptor).addPathPatterns("/**").excludePathPatterns(excludeList);
+//        registry.addInterceptor(loginInterceptor).addPathPatterns("/**").excludePathPatterns(excludeList);
     }
 
     @Override

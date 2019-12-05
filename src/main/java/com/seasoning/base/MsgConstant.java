@@ -18,6 +18,8 @@ public enum MsgConstant {
 	CANNOT_OPERATION(10003, "您还没有这个权限！"),
 	/** 10004, 手机号错误！ */
 	PHONE_ERROR(10004, "手机号错误！"),
+	/** 10005, 数据不存在！ */
+	DATA_ERROR(10005, "数据不存在！"),
 
 	/** 10006,特殊字符传入 */
 	CHAR_FILTER(10006,"请勿填写特殊字符！"),
