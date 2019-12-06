@@ -9,6 +9,8 @@ import com.seasoning.entity.ShoppingCart;
 import com.seasoning.request.AddShoppingCartRequest;
 import com.seasoning.service.ShoppingCartService;
 import com.seasoning.util.CommonUtil;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +29,7 @@ import java.util.List;
  * @since 2019-07-28
  */
 @RestController
+@Api(tags = "ShoppingCartController", description = "购物车相关接口")
 @RequestMapping("/shopping-cart")
 @Slf4j
 public class ShoppingCartController {
@@ -34,8 +37,9 @@ public class ShoppingCartController {
     @Autowired
     private ShoppingCartService shoppingCartService;
 
+    @ApiOperation(value = "根据用户id获取购物车内商品信息")
     @GetMapping("/list/{userId}")
-    public BaseMsg list(@PathVariable int userId){
+    public BaseMsg<List<ShopingCartGoods>> list(@PathVariable int userId){
         if(userId <= 0){
             return CommonUtil.returnMsg(MsgConstant.PARAM_ERROR);
         }
@@ -43,6 +47,7 @@ public class ShoppingCartController {
         return CommonUtil.returnMsg(MsgConstant.OK, list);
     }
 
+    @ApiOperation(value = "根据唯一id删除购物车内商品")
     @DeleteMapping("/delete/{id}")
     public BaseMsg delete(@PathVariable int id){
         if(id <= 0){
@@ -52,6 +57,7 @@ public class ShoppingCartController {
         return CommonUtil.returnMsg(MsgConstant.OK);
     }
 
+    @ApiOperation(value = "根据唯一id减去购物车内商品(默认减一，商品数为1时做删除操作)")
     @GetMapping("/decrease/{id}")
     public BaseMsg decrease(@PathVariable int id){
         if(id <= 0){
@@ -71,6 +77,7 @@ public class ShoppingCartController {
         return CommonUtil.returnMsg(MsgConstant.OK);
     }
 
+    @ApiOperation(value = "添加商品到购物车")
     @PostMapping("/add")
     public BaseMsg add(@RequestBody @Valid AddShoppingCartRequest request, BindingResult result){
         if(result.hasErrors()){

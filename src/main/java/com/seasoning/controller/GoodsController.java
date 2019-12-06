@@ -12,6 +12,8 @@ import com.seasoning.request.GoodsAddRequest;
 import com.seasoning.request.GoodsSearchRequest;
 import com.seasoning.service.GoodsService;
 import com.seasoning.util.CommonUtil;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -31,6 +33,7 @@ import javax.validation.Valid;
  */
 @Slf4j
 @RestController
+@Api(tags = "GoodsController", description = "商品操作相关接口")
 @RequestMapping("/goods")
 public class GoodsController {
 
@@ -66,9 +69,7 @@ public class GoodsController {
         if(goods.getSelling() != null){
             updateWrapper.set("selling", goods.getSelling());
         }
-        if(goods.getDetailImage() != null){
-            updateWrapper.set("detail_image", goods.getDetailImage());
-        }
+
         if(goods.getPrice() != null){
             updateWrapper.set("price", goods.getPrice());
         }
@@ -90,8 +91,9 @@ public class GoodsController {
         return CommonUtil.returnMsg(MsgConstant.OK,  goodsService.removeById(goodsId));
     }
 
+    @ApiOperation(value = "根据输入信息查询商品列表")
     @PostMapping("/page")
-    public BaseMsg page(@RequestBody GoodsSearchRequest request)  {
+    public BaseMsg<IPage<Goods>> page(@RequestBody GoodsSearchRequest request)  {
 
         QueryWrapper<Goods> queryWrapper = new QueryWrapper<>();
         if(StringUtils.isNotBlank(request.getGoodsName())){
@@ -119,8 +121,9 @@ public class GoodsController {
         return CommonUtil.returnMsg(MsgConstant.OK, resultPage);
     }
 
+    @ApiOperation(value = "根据商品id获取商品信息")
     @GetMapping("/get/{goodsId}")
-    public BaseMsg get(@PathVariable Integer goodsId){
+    public BaseMsg<Goods> get(@PathVariable Integer goodsId){
         Goods goods = goodsService.getById(goodsId);
         return CommonUtil.returnMsg(MsgConstant.OK, goods);
     }

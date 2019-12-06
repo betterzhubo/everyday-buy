@@ -11,10 +11,13 @@ import com.seasoning.entity.Order;
 import com.seasoning.entity.OrderGoods;
 import com.seasoning.request.AddOrderRequest;
 import com.seasoning.request.OrderSearchRequest;
+import com.seasoning.request.UpdateOrderRequest;
 import com.seasoning.service.OrderGoodsService;
 import com.seasoning.service.OrderService;
 import com.seasoning.service.UserService;
 import com.seasoning.util.CommonUtil;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -38,6 +41,7 @@ import java.util.List;
  */
 @Slf4j
 @RestController
+@Api(tags = "OrderController", description = "订单操作相关接口")
 @RequestMapping("/order")
 public class OrderController {
 
@@ -48,52 +52,62 @@ public class OrderController {
     @Autowired
     private UserService userService;
 
+    @ApiOperation(value = "根据订单id获取订单内容")
     @PostMapping("/page")
-    public BaseMsg page(@RequestBody OrderSearchRequest request)  {
+    public BaseMsg<IPage<Order>> page(@RequestBody OrderSearchRequest request)  {
 
         QueryWrapper<Order> queryWrapper = new QueryWrapper<>();
 
         if(null != request.getId()){
             queryWrapper.eq("id", request.getId());
         }
-        if(StringUtils.isNotBlank(request.getUserName())){
-            List<Integer> list = userService.getIdByName(request.getUserName());
-            if(list.size() > 0){
-                queryWrapper.in("user_id", list);
+
+        if(null != request.getUserId()){
+            queryWrapper.eq("user_id", request.getUserId());
+        }else{
+            if(StringUtils.isNotBlank(request.getUserName())){
+                List<Integer> list = userService.getIdByName(request.getUserName());
+                if(list.size() > 0){
+                    queryWrapper.in("user_id", list);
+                }
             }
         }
         if(null != request.getOrderStatus()){
             queryWrapper.eq("order_status", request.getOrderStatus());
         }
+        queryWrapper.orderByDesc("create_time");
 
-        Page<Order> page = new Page<>();
+        Page<Order> page = new Page<>(request.getCurrent()+1, request.getPageSize());
         IPage<Order> resultPage = orderService.page(page, queryWrapper);
         return CommonUtil.returnMsg(MsgConstant.OK, resultPage);
     }
+
+    @ApiOperation(value = "根据订单id修改订单内容, 可修改内容")
     @PutMapping("/update")
-    public BaseMsg update(@RequestBody Order order)  {
-        if(null == order.getId()){
+    public BaseMsg update(@RequestBody UpdateOrderRequest request)  {
+        if(null == request.getId()){
             return CommonUtil.returnMsg(MsgConstant.PARAM_ERROR);
         }
         UpdateWrapper<Order> updateWrapper = new UpdateWrapper<>();
-        updateWrapper.eq("id", order.getId());
+        updateWrapper.eq("id", request.getId());
 
-        if(order.getConsigneeName() != null){
-            updateWrapper.set("consignee_name", order.getConsigneeName());
+        if(request.getConsigneeName() != null){
+            updateWrapper.set("consignee_name", request.getConsigneeName());
         }
-        if(order.getConsigneeMobile() != null){
-            updateWrapper.set("consignee_mobile", order.getConsigneeMobile());
+        if(request.getConsigneeMobile() != null){
+            updateWrapper.set("consignee_mobile", request.getConsigneeMobile());
         }
-        if(order.getConsigneeAddress() != null){
-            updateWrapper.set("consignee_address", order.getConsigneeAddress());
+        if(request.getConsigneeAddress() != null){
+            updateWrapper.set("consignee_address", request.getConsigneeAddress());
         }
-        if(order.getOrderStatus() != null){
-            updateWrapper.set("order_status", order.getOrderStatus());
+        if(request.getOrderStatus() != null){
+            updateWrapper.set("order_status", request.getOrderStatus());
         }
         return CommonUtil.returnMsg(MsgConstant.OK, orderService.update(updateWrapper));
     }
 
 
+    @ApiOperation(value = "添加订单")
     @PostMapping("/add")
     public BaseMsg add(@RequestBody @Valid AddOrderRequest request, BindingResult result){
         if(result.hasErrors()){
@@ -121,8 +135,9 @@ public class OrderController {
         return CommonUtil.returnMsg(MsgConstant.OK, id);
     }
 
+    @ApiOperation(value = "根据订单id获取订单内容")
     @GetMapping("/get/{orderId}")
-    public BaseMsg get(@PathVariable int id){
+    public BaseMsg<Order> get(@PathVariable int id){
         if(id <= 0){
             return CommonUtil.returnMsg(MsgConstant.PARAM_ERROR);
         }
@@ -131,7 +146,7 @@ public class OrderController {
             Duration duration = Duration.between(order.getCreateTime(), LocalDateTime.now());
             if(duration.getSeconds() > 600){
                 UpdateWrapper<Order> updateWrapper = new UpdateWrapper<>();
-                updateWrapper .eq("id",id).set("order_status", 0);
+                updateWrapper .eq("id",id).set("order_status", 5);
                 orderService.update(updateWrapper);
                 order.setOrderStatus(0);
             }

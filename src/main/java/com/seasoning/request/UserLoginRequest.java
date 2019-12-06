@@ -2,8 +2,18 @@ package com.seasoning.request;
 
 import lombok.Data;
 
+import javax.validation.constraints.NotBlank;
+
 @Data
 public class UserLoginRequest {
-    private String account;
-    private String password;
+
+    @NotBlank
+    private String code;
+
+    @NotBlank
+    private String phone;
+
+    @NotBlank
+    private String name;
+
 }

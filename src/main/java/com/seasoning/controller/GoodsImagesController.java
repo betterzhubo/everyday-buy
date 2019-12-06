@@ -11,12 +11,15 @@ import com.seasoning.entity.GoodsImages;
 import com.seasoning.service.GoodsImagesService;
 import com.seasoning.util.CommonUtil;
 import com.seasoning.util.FileUtil;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.*;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,15 +35,17 @@ import java.util.Map;
  */
 @Slf4j
 @RestController
+@Api(tags = "EcgBindingController", description = "APP端绑定手表相关操作")
 @RequestMapping("/goods-images")
 public class GoodsImagesController {
 
     @Autowired
     private GoodsImagesService goodsImagesService;
 
+    @ApiOperation(value = "根据图片类型和商品id获取对应的图片列表")
     @GetMapping("/list/{goodsId}/{imagesType}")
     @ResponseBody
-    public BaseMsg getImagesList(@PathVariable Integer goodsId, @PathVariable Integer imagesType){
+    public BaseMsg<List<GoodsImages>> getImagesList(@PathVariable Integer goodsId, @PathVariable @ApiParam(value = "图片类型1:轮播图片,2:详情图片'") Integer imagesType){
         QueryWrapper<GoodsImages> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("goods_id", goodsId);
         if(imagesType != null && imagesType != 0){

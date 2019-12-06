@@ -1,13 +1,12 @@
 package com.seasoning.util;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import com.alibaba.fastjson.JSON;
 import com.seasoning.base.BaseMsg;
 import com.seasoning.base.MsgConstant;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
@@ -49,8 +48,8 @@ public class CommonUtil {
 	 * @param data 需要接口返回的数据
 	 * @return 返回通用数据格式
 	 */
-	public static BaseMsg returnMsg(MsgConstant msgConstant, Object data){
-		BaseMsg msg = new BaseMsg();
+	public static <T> BaseMsg<T> returnMsg(MsgConstant msgConstant, T data){
+		BaseMsg<T> msg = new BaseMsg();
 		msg.setCode(msgConstant.getCode());
 		msg.setData(data);
 		msg.setMsg(msgConstant.getDesc());

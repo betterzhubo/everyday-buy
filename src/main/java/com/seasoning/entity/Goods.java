@@ -52,12 +52,6 @@ public class Goods implements Serializable {
     private String showImage;
 
     /**
-     * 详情内图片
-     */
-    @TableField("detail_image")
-    private String detailImage;
-
-    /**
      * 是否销售中
      */
     @TableField("selling")

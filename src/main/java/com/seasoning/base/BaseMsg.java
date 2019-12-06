@@ -10,12 +10,12 @@ import java.io.Serializable;
  * @since 2016年11月18日
  */
 @Data
-public class BaseMsg implements Serializable {
+public class BaseMsg<T> implements Serializable {
 	/** 返回code码 */
 	private int code;
 	/** 返回提示信息 */
 	private String msg;
 	/** 程序返回数据 */
-	private Object data;
+	private T data;
 
 }

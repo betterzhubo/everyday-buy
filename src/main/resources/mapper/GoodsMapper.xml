@@ -10,13 +10,12 @@
         <result column="price" property="price" />
         <result column="goods_type_id" property="goodsTypeId" />
         <result column="show_image" property="showImage" />
-        <result column="detail_image" property="detailImage" />
         <result column="selling" property="selling" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, goods_name, purpose, price, goods_type_id, show_image, detail_image, selling
+        id, goods_name, purpose, price, goods_type_id, show_image, selling
     </sql>
 
 </mapper>

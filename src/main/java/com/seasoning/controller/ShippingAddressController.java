@@ -5,13 +5,13 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.seasoning.base.BaseMsg;
 import com.seasoning.base.MsgConstant;
-import com.seasoning.entity.Order;
 import com.seasoning.entity.ShippingAddress;
 import com.seasoning.request.AddShippingAddressRequest;
-import com.seasoning.request.OrderSearchRequest;
 import com.seasoning.request.UpdateShippingAddressRequest;
 import com.seasoning.service.ShippingAddressService;
 import com.seasoning.util.CommonUtil;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -32,14 +32,16 @@ import java.util.List;
  */
 @Slf4j
 @RestController
+@Api(tags = "ShippingAddressController", description = "配送地址相关接口")
 @RequestMapping("/shipping-address")
 public class ShippingAddressController {
 
     @Autowired
     private ShippingAddressService shippingAddressService;
 
+    @ApiOperation(value = "根据用户id获取配送地址信息")
     @GetMapping("/list")
-    public BaseMsg list(@PathVariable Integer userId)  {
+    public BaseMsg<List<ShippingAddress>> list(@PathVariable Integer userId)  {
         if(userId == null || userId <= 0){
             return CommonUtil.returnMsg(MsgConstant.PARAM_ERROR);
         }
@@ -50,6 +52,7 @@ public class ShippingAddressController {
         return CommonUtil.returnMsg(MsgConstant.OK, list);
     }
 
+    @ApiOperation(value = "根据用户id修改配送地址信息")
     @PutMapping("/update")
     public BaseMsg update(@RequestBody UpdateShippingAddressRequest request){
         if(request.getUserId() <= 0 || request.getId() <= 0){
@@ -73,6 +76,7 @@ public class ShippingAddressController {
         return CommonUtil.returnMsg(MsgConstant.OK);
     }
 
+    @ApiOperation(value = "添加配送地址信息")
     @PostMapping("/add")
     public BaseMsg add(@RequestBody @Valid AddShippingAddressRequest request, BindingResult result){
 
@@ -88,12 +92,12 @@ public class ShippingAddressController {
         return CommonUtil.returnMsg(MsgConstant.SQL_ERROR);
     }
 
+    @ApiOperation(value = "删除配送地址信息")
     @DeleteMapping("/delete/{id}")
     public BaseMsg delete(@PathVariable int id){
         if(id <= 0){
             return CommonUtil.returnMsg(MsgConstant.PARAM_ERROR);
         }
-
         return CommonUtil.returnMsg(MsgConstant.OK, shippingAddressService.removeById(id));
     }
 

@@ -9,9 +9,9 @@ spring:
     name: everyday_source
     type: com.alibaba.druid.pool.DruidDataSource
     druid:
-      url: jdbc:mysql://127.0.0.1:3306/everyday_buy?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=GMT%2B8
+      url: jdbc:mysql://127.0.0.1:3306/equipment?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=GMT%2B8
       username: root
-      password: password
+      password: 123456
       filters: stat
       driver-class-name: com.mysql.cj.jdbc.Driver
       initial-size: 1
@@ -60,3 +60,6 @@ mybatis-plus:
   configuration:
     map-underscore-to-camel-case: true
     cache-enabled: false
+weixin:
+  appId:
+  appSecret:
