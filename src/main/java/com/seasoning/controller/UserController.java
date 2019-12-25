@@ -17,10 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -36,6 +33,7 @@ import java.util.List;
 @Slf4j
 @Api(tags = "UserController", description = "用户操作相关接口")
 @RestController
+@RequestMapping("/user")
 public class UserController {
 
     @Autowired
@@ -55,7 +53,7 @@ public class UserController {
     @PostMapping("/login")
     public BaseMsg login(@RequestBody @Valid UserLoginRequest request, BindingResult result){
         if(result.hasErrors()){
-            log.error("参数错误！", result.getAllErrors().get(0).getDefaultMessage());
+            log.error("参数错误！", result.getAllErrors().get(0).toString());
             return CommonUtil.returnMsg(MsgConstant.PARAM_ERROR);
         }
 
@@ -65,7 +63,7 @@ public class UserController {
         }
         JSONObject jsonObject = JSONObject.parseObject(resultStr);
         String errorCode = jsonObject.getString("errcode");
-        if(!StringUtils.equals(errorCode, "0")){
+        if(!StringUtils.isEmpty(errorCode)){
             return CommonUtil.returnMsg(MsgConstant.HTTP_REQUEST_ERROR);
         }
         String openid = jsonObject.getString("openid");
@@ -75,7 +73,7 @@ public class UserController {
         if(user == null){
             user = new User();
             user.setName(request.getName());
-            user.setPhone(request.getPhone());
+            user.setPhone("");
             user.setOpenid(openid);
             userService.save(user);
         }

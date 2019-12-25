@@ -9,10 +9,10 @@ import java.util.Map;
 @Component
 public class WechatApiUtil {
 
-    @Value("${weixin.appId}")
+    @Value("${wechat.appId}")
     private String appId;
 
-    @Value("${weixin.appSecret}")
+    @Value("${wechat.appSecret}")
     private String appSecret;
 
     private String CODE_SESSION_URL = "https://api.weixin.qq.com/sns/jscode2session";

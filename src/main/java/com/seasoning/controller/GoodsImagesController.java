@@ -5,7 +5,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.seasoning.base.BaseMsg;
-import com.seasoning.base.CommonConstant;
+import com.seasoning.base.ContextConstant;
 import com.seasoning.base.MsgConstant;
 import com.seasoning.entity.GoodsImages;
 import com.seasoning.service.GoodsImagesService;
@@ -39,6 +39,8 @@ import java.util.Map;
 @RequestMapping("/goods-images")
 public class GoodsImagesController {
 
+    @Autowired
+    private ContextConstant contextConstant;
     @Autowired
     private GoodsImagesService goodsImagesService;
 
@@ -84,7 +86,7 @@ public class GoodsImagesController {
     @ResponseBody
     public BaseMsg upload(@RequestParam MultipartFile uploadFile ) throws IOException{
 
-        String filePath = CommonConstant.IMAGES_PATH + uploadFile.getOriginalFilename();
+        String filePath = contextConstant.getImagePath() + uploadFile.getOriginalFilename();
         return CommonUtil.returnMsg(FileUtil.copyFile(uploadFile, filePath)? MsgConstant.OK : MsgConstant.FILE_UPLODE_ERROR);
     }
 }

@@ -10,8 +10,6 @@ public class UserLoginRequest {
     @NotBlank
     private String code;
 
-    @NotBlank
-    private String phone;
 
     @NotBlank
     private String name;

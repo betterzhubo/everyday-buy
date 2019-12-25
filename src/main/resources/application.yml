@@ -60,6 +60,8 @@ mybatis-plus:
   configuration:
     map-underscore-to-camel-case: true
     cache-enabled: false
-weixin:
-  appId:
-  appSecret:
+wechat:
+  appId: wxc1ae2ed6a6c52fc5
+  appSecret: 181cab28bfe1c9a5be42d83aa81f7ae5
+everyday-buy:
+  resources-path: F:/static/

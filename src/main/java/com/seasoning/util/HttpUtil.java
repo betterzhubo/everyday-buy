@@ -97,7 +97,7 @@ public class HttpUtil {
 				log.error("close resource fail", e);
 			}
 		}
-		log.info("request content", resultString);
+		log.info("request content: "+ resultString);
 		return resultString;
 	}
 

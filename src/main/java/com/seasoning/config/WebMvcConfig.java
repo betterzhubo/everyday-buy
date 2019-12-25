@@ -1,5 +1,6 @@
 package com.seasoning.config;
 
+import com.seasoning.base.ContextConstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -14,6 +15,9 @@ import java.util.List;
  */
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
+
+    @Autowired
+    private ContextConstant contextConstant;
 
     @Autowired
     private LoginInterceptor loginInterceptor;
@@ -32,11 +36,14 @@ public class WebMvcConfig implements WebMvcConfigurer {
         excludeList.add("/font/**");
         excludeList.add("/vendor/**");
         excludeList.add("/icons-reference/**");
+        excludeList.add("/v2/api-docs/**");
+        excludeList.add("/login/**");
 //        registry.addInterceptor(loginInterceptor).addPathPatterns("/**").excludePathPatterns(excludeList);
     }
 
     @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry){
-        registry.addResourceHandler("/static/**").addResourceLocations("classpath:/static/");
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("/static/**").addResourceLocations("file:" + contextConstant.getResourcesPath());
     }
+
 }

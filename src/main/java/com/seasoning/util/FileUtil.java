@@ -3,7 +3,6 @@ package com.seasoning.util;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.util.ClassUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
@@ -43,7 +42,7 @@ public class FileUtil {
     }
 
 	public static boolean copyFile(MultipartFile sourceFile, String targetFile){
-		File file = new File(ClassUtils.getDefaultClassLoader().getResource("").getPath()+ targetFile);
+		File file = new File(targetFile);
 		try(InputStream inputStream = sourceFile.getInputStream();
 			OutputStream outputStream = new FileOutputStream(file)){
 			byte[] bs = new byte[1024];

@@ -12,7 +12,7 @@
         <File>${logging.basepath}/everyday_buy.log</File>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>${logging.basepath}/everyday_buy.%d{yyyy-MM-dd}.log</fileNamePattern>
-            <totalSizeCap>1GB</totalSizeCap>
+            <totalSizeCap>20MB</totalSizeCap>
         </rollingPolicy>
         <encoder>
             <pattern>
@@ -20,11 +20,6 @@
             </pattern>
             <charset>UTF-8</charset>
         </encoder>
-        <filter class="ch.qos.logback.classic.filter.LevelFilter">
-            <level>INFO</level>
-            <onMatch>ACCEPT</onMatch>
-            <onMismatch>DENY</onMismatch>
-        </filter>
     </appender>
 
     <root level="info">
