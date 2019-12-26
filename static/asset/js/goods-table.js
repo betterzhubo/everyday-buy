@@ -257,7 +257,7 @@ function bigImgShow(imgUrl){
 }
 var bigImgShowTag = function(imgUrl){
     return $("<a>").text(imgUrl).click(function () {
-        bigImgShow("image/"+imgUrl);
+        bigImgShow("static/image/"+imgUrl);
     });
 }
 
@@ -385,7 +385,7 @@ $(".file").change(function() {
 				var imgObjPreview = picHtml.find("img");
 				//图片属性
 				imgObjPreview.css({"display": "block", "width": "160px", "height": "130px"});
-				imgObjPreview.attr("src", "image/" + fileObj.name);
+				imgObjPreview.attr("src", "static/image/" + fileObj.name);
 				/*删除功能*/
 				$(".delbtn").click(function () {
 					var _this = $(this);
