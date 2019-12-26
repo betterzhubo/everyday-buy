@@ -29,15 +29,10 @@ public class WebMvcConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         List<String> excludeList = new ArrayList<>();
         excludeList.add("/");
+        excludeList.add("/user/login");
         excludeList.add("/login");
-        excludeList.add("/asset/**");
-        excludeList.add("/js/**");
-        excludeList.add("/css/**");
-        excludeList.add("/font/**");
-        excludeList.add("/vendor/**");
-        excludeList.add("/icons-reference/**");
+        excludeList.add("/static/**");
         excludeList.add("/v2/api-docs/**");
-        excludeList.add("/login/**");
 //        registry.addInterceptor(loginInterceptor).addPathPatterns("/**").excludePathPatterns(excludeList);
     }
 

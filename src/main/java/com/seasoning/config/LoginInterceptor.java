@@ -1,5 +1,6 @@
 package com.seasoning.config;
 
+import com.seasoning.base.CommonConstant;
 import com.seasoning.base.MsgConstant;
 import com.seasoning.util.CommonUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -21,12 +22,16 @@ public class LoginInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
         HttpSession session = request.getSession();
-        String mark = (String) session.getAttribute("mark");
-        if (!StringUtils.equals("1", mark)) {
-            CommonUtil.updateResponse(MsgConstant.NOT_LOGIN, response, null);
-            return false;
+        String mark = (String) session.getAttribute(CommonConstant.USER_MANAGEMENT);
+        if (StringUtils.equals("1", mark)) {
+            return true;
         }
-        return true;
+        Object userInfo = session.getAttribute(CommonConstant.USER_INFO);
+        if(userInfo != null){
+            return true;
+        }
+        CommonUtil.updateResponse(MsgConstant.NOT_LOGIN, response, null);
+        return false;
     }
 
 

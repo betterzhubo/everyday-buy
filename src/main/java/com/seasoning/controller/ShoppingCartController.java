@@ -6,17 +6,20 @@ import com.seasoning.base.BaseMsg;
 import com.seasoning.base.MsgConstant;
 import com.seasoning.entity.ShopingCartGoods;
 import com.seasoning.entity.ShoppingCart;
+import com.seasoning.entity.User;
 import com.seasoning.request.AddShoppingCartRequest;
 import com.seasoning.service.ShoppingCartService;
 import com.seasoning.util.CommonUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.util.List;
 
@@ -38,29 +41,35 @@ public class ShoppingCartController {
     private ShoppingCartService shoppingCartService;
 
     @ApiOperation(value = "根据用户id获取购物车内商品信息")
-    @GetMapping("/list/{userId}")
-    public BaseMsg<List<ShopingCartGoods>> list(@PathVariable int userId){
-        if(userId <= 0){
-            return CommonUtil.returnMsg(MsgConstant.PARAM_ERROR);
-        }
-        List<ShopingCartGoods> list = shoppingCartService.getListByUserId(userId);
+    @GetMapping("/list")
+    public BaseMsg<List<ShopingCartGoods>> list(HttpSession session){
+        User user = CommonUtil.getUserBySession(session);
+        List<ShopingCartGoods> list = shoppingCartService.getListByUserId(user.getId());
         return CommonUtil.returnMsg(MsgConstant.OK, list);
     }
 
     @ApiOperation(value = "根据唯一id删除购物车内商品")
     @DeleteMapping("/delete/{id}")
-    public BaseMsg delete(@PathVariable int id){
+    public BaseMsg delete(@PathVariable int id, HttpSession session){
         if(id <= 0){
             return CommonUtil.returnMsg(MsgConstant.PARAM_ERROR);
         }
-        shoppingCartService.removeById(id);
+        User user = CommonUtil.getUserBySession(session);
+
+        UpdateWrapper<ShoppingCart> wrapper = new UpdateWrapper<>();
+        wrapper.eq("user_id", user.getId());
+        wrapper.eq("id", id);
+        shoppingCartService.remove(wrapper);
         return CommonUtil.returnMsg(MsgConstant.OK);
     }
 
-    @ApiOperation(value = "根据唯一id减去购物车内商品(默认减一，商品数为1时做删除操作)")
-    @GetMapping("/decrease/{id}")
-    public BaseMsg decrease(@PathVariable int id){
+    @ApiOperation(value = "根据唯一id减去或增加购物车内商品(减少时当商品数为1时做删除操作)")
+    @GetMapping("/decrease/{id}/{operate}")
+    public BaseMsg decrease(@PathVariable int id, @PathVariable @ApiParam(value = "操作1:增加，-1:减少(只允许这两个值)") int operate, HttpSession session){
         if(id <= 0){
+            return CommonUtil.returnMsg(MsgConstant.PARAM_ERROR);
+        }
+        if(operate != 1 && operate != -1){
             return CommonUtil.returnMsg(MsgConstant.PARAM_ERROR);
         }
         ShoppingCart shoppingCart = shoppingCartService.getById(id);
@@ -71,21 +80,25 @@ public class ShoppingCartController {
             shoppingCartService.removeById(id);
             return CommonUtil.returnMsg(MsgConstant.OK);
         }
+        User user = CommonUtil.getUserBySession(session);
         UpdateWrapper<ShoppingCart> updateWrapper = new UpdateWrapper<>();
         updateWrapper.eq("id", id);
-        updateWrapper.set("shopping_cart", shoppingCart.getGoodsCount() - 1);
+        updateWrapper.eq("user_id", user.getId());
+        updateWrapper.set("shopping_cart", shoppingCart.getGoodsCount() + operate);
         return CommonUtil.returnMsg(MsgConstant.OK);
     }
 
     @ApiOperation(value = "添加商品到购物车")
     @PostMapping("/add")
-    public BaseMsg add(@RequestBody @Valid AddShoppingCartRequest request, BindingResult result){
+    public BaseMsg add(@RequestBody @Valid AddShoppingCartRequest request, BindingResult result, HttpSession session){
         if(result.hasErrors()){
             log.error("参数错误！", result.getAllErrors().get(0).getDefaultMessage());
             return CommonUtil.returnMsg(MsgConstant.PARAM_ERROR);
         }
         ShoppingCart shoppingCart = new ShoppingCart();
         BeanUtils.copyProperties(request, shoppingCart);
+        User user = CommonUtil.getUserBySession(session);
+        shoppingCart.setUserId(user.getId());
         shoppingCartService.save(shoppingCart);
         return CommonUtil.returnMsg(MsgConstant.OK);
     }

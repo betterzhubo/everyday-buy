@@ -1,12 +1,14 @@
 package com.seasoning.controller;
 
+import com.seasoning.base.CommonConstant;
 import com.seasoning.service.GoodsTypeService;
 import com.seasoning.service.UserService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -37,7 +39,7 @@ public class RouterController {
             return "login";
         }
         HttpSession session = request.getSession();
-        session.setAttribute("mark", "1");
+        session.setAttribute(CommonConstant.USER_MANAGEMENT, "1");
         return "main";
     }
 

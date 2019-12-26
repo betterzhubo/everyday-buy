@@ -14,9 +14,6 @@ public class UpdateShippingAddressRequest {
     @ApiModelProperty(value = "收货信息唯一id")
     private int id;
 
-    @ApiModelProperty(value = "用户唯一id")
-    private int userId;
-
     @ApiModelProperty(value = "收货人地区")
     private String consigneeArea;
 

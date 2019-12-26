@@ -17,10 +17,6 @@ import java.util.List;
 @ApiModel
 public class AddOrderRequest {
 
-    @ApiModelProperty(value = "用户唯一id")
-    @Range(min=1, max=Integer.MAX_VALUE, message = "参数错误")
-    private int userId;
-
     @ApiModelProperty(value = "收货人名字")
     @NotBlank(message = "参数不能为空")
     private String consigneeName;

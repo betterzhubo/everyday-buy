@@ -9,6 +9,7 @@ import com.seasoning.base.BaseMsg;
 import com.seasoning.base.MsgConstant;
 import com.seasoning.entity.Order;
 import com.seasoning.entity.OrderGoods;
+import com.seasoning.entity.User;
 import com.seasoning.request.AddOrderRequest;
 import com.seasoning.request.OrderSearchRequest;
 import com.seasoning.request.UpdateOrderRequest;
@@ -25,6 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -54,7 +56,7 @@ public class OrderController {
 
     @ApiOperation(value = "根据订单id获取订单内容")
     @PostMapping("/page")
-    public BaseMsg<IPage<Order>> page(@RequestBody OrderSearchRequest request)  {
+    public BaseMsg<IPage<Order>> page(@RequestBody OrderSearchRequest request, HttpSession session)  {
 
         QueryWrapper<Order> queryWrapper = new QueryWrapper<>();
 
@@ -62,15 +64,15 @@ public class OrderController {
             queryWrapper.eq("id", request.getId());
         }
 
-        if(null != request.getUserId()){
-            queryWrapper.eq("user_id", request.getUserId());
-        }else{
-            if(StringUtils.isNotBlank(request.getUserName())){
-                List<Integer> list = userService.getIdByName(request.getUserName());
-                if(list.size() > 0){
-                    queryWrapper.in("user_id", list);
-                }
+        if(StringUtils.isNotBlank(request.getUserName())){
+            List<Integer> list = userService.getIdByName(request.getUserName());
+            if(list.size() > 0){
+                queryWrapper.in("user_id", list);
             }
+        }
+        User user = CommonUtil.getUserBySession(session);
+        if(user != null){
+            queryWrapper.eq("user_id", user.getId());
         }
         if(null != request.getOrderStatus()){
             queryWrapper.eq("order_status", request.getOrderStatus());
@@ -84,12 +86,16 @@ public class OrderController {
 
     @ApiOperation(value = "根据订单id修改订单内容, 可修改内容")
     @PutMapping("/update")
-    public BaseMsg update(@RequestBody UpdateOrderRequest request)  {
+    public BaseMsg update(@RequestBody UpdateOrderRequest request, HttpSession session)  {
         if(null == request.getId()){
             return CommonUtil.returnMsg(MsgConstant.PARAM_ERROR);
         }
         UpdateWrapper<Order> updateWrapper = new UpdateWrapper<>();
         updateWrapper.eq("id", request.getId());
+        User user = CommonUtil.getUserBySession(session);
+        if(user != null){
+            updateWrapper.eq("user_id", user.getId());
+        }
 
         if(request.getConsigneeName() != null){
             updateWrapper.set("consignee_name", request.getConsigneeName());
@@ -109,13 +115,18 @@ public class OrderController {
 
     @ApiOperation(value = "添加订单")
     @PostMapping("/add")
-    public BaseMsg add(@RequestBody @Valid AddOrderRequest request, BindingResult result){
+    public BaseMsg add(@RequestBody @Valid AddOrderRequest request, BindingResult result, HttpSession session){
         if(result.hasErrors()){
             log.error("参数错误！", result.getAllErrors().get(0).getDefaultMessage());
             return CommonUtil.returnMsg(MsgConstant.PARAM_ERROR);
         }
+        User user = CommonUtil.getUserBySession(session);
+        if(user == null){
+            return CommonUtil.returnMsg(MsgConstant.LOGIN_OVERTIME);
+        }
         Order order = new Order();
         BeanUtils.copyProperties(request, order);
+        order.setUserId(user.getId());
         int id = orderService.generateOrderId();
         order.setId(id);
         if(!orderService.save(order)){
@@ -137,11 +148,17 @@ public class OrderController {
 
     @ApiOperation(value = "根据订单id获取订单内容")
     @GetMapping("/get/{orderId}")
-    public BaseMsg<Order> get(@PathVariable int id){
+    public BaseMsg<Order> get(@PathVariable int id, HttpSession session){
         if(id <= 0){
             return CommonUtil.returnMsg(MsgConstant.PARAM_ERROR);
         }
-        Order order = orderService.getById(id);
+        QueryWrapper<Order> wrapper = new QueryWrapper<>();
+        wrapper.eq("id", id);
+        User user = CommonUtil.getUserBySession(session);
+        if(user == null){
+            wrapper.eq("user_id", user.getId());
+        }
+        Order order = orderService.getOne(wrapper);
         if(1 == order.getOrderStatus()){
             Duration duration = Duration.between(order.getCreateTime(), LocalDateTime.now());
             if(duration.getSeconds() > 600){

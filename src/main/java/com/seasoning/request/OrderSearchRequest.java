@@ -15,9 +15,6 @@ public class OrderSearchRequest {
     @ApiModelProperty(value = "订单唯一id")
     private Long id;
 
-    @ApiModelProperty(value = "用户唯一id")
-    private String userId;
-
     @ApiModelProperty(value = "用户名")
     private String userName;
 

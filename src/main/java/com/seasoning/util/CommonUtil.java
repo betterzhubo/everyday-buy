@@ -1,12 +1,17 @@
 package com.seasoning.util;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.seasoning.base.BaseMsg;
+import com.seasoning.base.CommonConstant;
 import com.seasoning.base.MsgConstant;
+import com.seasoning.entity.User;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
 /**
@@ -14,6 +19,7 @@ import java.io.IOException;
  * @author zhubo
  * @since 2016年11月23日
  */
+@Slf4j
 public class CommonUtil {
 
 	public static void updateResponse(MsgConstant msgConstant, HttpServletResponse response, Exception ex) throws IOException {
@@ -81,4 +87,17 @@ public class CommonUtil {
 	    }
 	    return ip;
 	}
+
+	public static User getUserBySession(HttpSession session){
+		Object obj = session.getAttribute(CommonConstant.USER_INFO);
+		if(obj == null){
+			return null;
+		}
+		if(obj instanceof User){
+			return (User)obj;
+		}
+		log.error("session data error : {}", JSONObject.toJSONString(obj));
+		return null;
+	}
+
 }

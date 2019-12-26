@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.seasoning.base.BaseMsg;
+import com.seasoning.base.CommonConstant;
 import com.seasoning.base.MsgConstant;
 import com.seasoning.entity.User;
 import com.seasoning.request.UserLoginRequest;
@@ -19,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.util.List;
 
@@ -51,7 +53,7 @@ public class UserController {
 
     @ApiOperation(value = "登录接口")
     @PostMapping("/login")
-    public BaseMsg login(@RequestBody @Valid UserLoginRequest request, BindingResult result){
+    public BaseMsg login(@RequestBody @Valid UserLoginRequest request, BindingResult result, HttpSession session){
         if(result.hasErrors()){
             log.error("参数错误！", result.getAllErrors().get(0).toString());
             return CommonUtil.returnMsg(MsgConstant.PARAM_ERROR);
@@ -77,8 +79,8 @@ public class UserController {
             user.setOpenid(openid);
             userService.save(user);
         }
+        session.setAttribute(CommonConstant.USER_INFO, user);
 
-
-        return CommonUtil.returnMsg(MsgConstant.OK, openid);
+        return CommonUtil.returnMsg(MsgConstant.OK);
     }
 }
