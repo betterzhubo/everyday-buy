@@ -10,10 +10,10 @@ import org.hibernate.validator.constraints.Range;
 public class AddShoppingCartRequest {
 
     @ApiModelProperty(value = "商品唯一id")
-    @Range(min=1, max=Integer.MAX_VALUE, message = "参数错误")
+    @Range(min=1, max=Integer.MAX_VALUE, message = "商品id错误")
     private int goodsId;
 
     @ApiModelProperty(value = "商品数量")
-    @Range(min=1, max=Integer.MAX_VALUE, message = "参数错误")
+    @Range(min=1, max=Integer.MAX_VALUE, message = "商品数量错误")
     private int goodsCount;
 }

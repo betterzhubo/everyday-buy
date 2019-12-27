@@ -18,7 +18,7 @@ public class SwapperConfig {
     public Docket createRestApi() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(apiInfo())
-                .pathMapping("/everyday-buy")
+                .pathMapping("")
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("com.seasoning.controller"))
                 .paths(PathSelectors.any())

@@ -8,8 +8,11 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.seasoning.base.BaseMsg;
 import com.seasoning.base.MsgConstant;
 import com.seasoning.entity.Goods;
+import com.seasoning.entity.ShopingCartGoods;
+import com.seasoning.entity.User;
 import com.seasoning.request.GoodsAddRequest;
 import com.seasoning.request.GoodsSearchRequest;
+import com.seasoning.request.PageRequest;
 import com.seasoning.service.GoodsService;
 import com.seasoning.util.CommonUtil;
 import io.swagger.annotations.Api;
@@ -21,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
 /**
@@ -126,6 +130,14 @@ public class GoodsController {
     public BaseMsg<Goods> get(@PathVariable Integer goodsId){
         Goods goods = goodsService.getById(goodsId);
         return CommonUtil.returnMsg(MsgConstant.OK, goods);
+    }
+
+    @ApiOperation(value = "根据商品id获取商品信息包含购物车内数量（带分页）")
+    @PostMapping("/shopping-car/page")
+    public BaseMsg<Page<ShopingCartGoods>>  getGoodsAndShopingCartPage(@RequestBody PageRequest request, HttpSession session){
+        User user = CommonUtil.getUserBySession(session);
+        Page<ShopingCartGoods> page = goodsService.getGoodsAndShopingCartPage(new Page<>(request.getCurrent(), request.getPageSize()), user.getId());
+        return CommonUtil.returnMsg(MsgConstant.OK, page);
     }
 }
 

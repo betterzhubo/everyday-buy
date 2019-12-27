@@ -1,10 +1,11 @@
 package com.seasoning.service.impl;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.seasoning.entity.ShopingCartGoods;
 import com.seasoning.entity.ShoppingCart;
 import com.seasoning.mapper.ShoppingCartMapper;
 import com.seasoning.service.ShoppingCartService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,7 +22,7 @@ import java.util.List;
 public class ShoppingCartServiceImpl extends ServiceImpl<ShoppingCartMapper, ShoppingCart> implements ShoppingCartService {
 
     @Override
-    public List<ShopingCartGoods> getListByUserId(int userId){
-        return baseMapper.getListByUserId(userId);
+    public Page<ShopingCartGoods> getListByUserId(Page<ShopingCartGoods> page, int userId){
+        return page.setRecords(this.baseMapper.getListByUserId(page, userId));
     }
 }

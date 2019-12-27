@@ -12,7 +12,7 @@
         <File>${logging.basepath}/everyday_buy.log</File>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>${logging.basepath}/everyday_buy.%d{yyyy-MM-dd}.log</fileNamePattern>
-            <totalSizeCap>20MB</totalSizeCap>
+            <totalSizeCap>2GB</totalSizeCap>
         </rollingPolicy>
         <encoder>
             <pattern>

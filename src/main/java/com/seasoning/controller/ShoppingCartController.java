@@ -1,13 +1,16 @@
 package com.seasoning.controller;
 
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.seasoning.base.BaseMsg;
 import com.seasoning.base.MsgConstant;
 import com.seasoning.entity.ShopingCartGoods;
 import com.seasoning.entity.ShoppingCart;
 import com.seasoning.entity.User;
 import com.seasoning.request.AddShoppingCartRequest;
+import com.seasoning.request.PageRequest;
 import com.seasoning.service.ShoppingCartService;
 import com.seasoning.util.CommonUtil;
 import io.swagger.annotations.Api;
@@ -21,7 +24,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
-import java.util.List;
+import java.math.BigDecimal;
+import java.util.Map;
 
 /**
  * <p>
@@ -41,10 +45,10 @@ public class ShoppingCartController {
     private ShoppingCartService shoppingCartService;
 
     @ApiOperation(value = "根据用户id获取购物车内商品信息")
-    @GetMapping("/list")
-    public BaseMsg<List<ShopingCartGoods>> list(HttpSession session){
+    @PostMapping("/list")
+    public BaseMsg<Page<ShopingCartGoods>> list(@RequestBody PageRequest request, HttpSession session){
         User user = CommonUtil.getUserBySession(session);
-        List<ShopingCartGoods> list = shoppingCartService.getListByUserId(user.getId());
+        Page<ShopingCartGoods> list = shoppingCartService.getListByUserId(new Page<>(request.getCurrent(), request.getPageSize()), user.getId());
         return CommonUtil.returnMsg(MsgConstant.OK, list);
     }
 
@@ -85,6 +89,7 @@ public class ShoppingCartController {
         updateWrapper.eq("id", id);
         updateWrapper.eq("user_id", user.getId());
         updateWrapper.set("shopping_cart", shoppingCart.getGoodsCount() + operate);
+        shoppingCartService.update(updateWrapper);
         return CommonUtil.returnMsg(MsgConstant.OK);
     }
 
@@ -101,6 +106,21 @@ public class ShoppingCartController {
         shoppingCart.setUserId(user.getId());
         shoppingCartService.save(shoppingCart);
         return CommonUtil.returnMsg(MsgConstant.OK);
+    }
+
+    @ApiOperation(value = "获取购物车内商品总数量")
+    @GetMapping("/sum")
+    public BaseMsg sum(HttpSession session){
+
+        QueryWrapper<ShoppingCart> wrapper = new QueryWrapper<>();
+        User user = CommonUtil.getUserBySession(session);
+        wrapper.eq("user_id", user.getId());
+//        wrapper.eq("user_id", 1);
+        wrapper.select("sum(goods_count) total");
+        wrapper.groupBy("user_id");
+        Map<String, Object> map = shoppingCartService.getMap(wrapper);
+        BigDecimal bd = (BigDecimal) map.get("total");
+        return CommonUtil.returnMsg(MsgConstant.OK, bd.intValue());
     }
 }
 

@@ -1,7 +1,12 @@
 package com.seasoning.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.seasoning.entity.Goods;
+import com.seasoning.entity.ShopingCartGoods;
+import org.apache.ibatis.annotations.Select;
+
+import java.util.List;
 
 /**
  * <p>
@@ -12,5 +17,8 @@ import com.seasoning.entity.Goods;
  * @since 2019-07-31
  */
 public interface GoodsMapper extends BaseMapper<Goods> {
+
+    @Select("select g.id as goods_id, g.goods_name, g.purpose, g.selling ,g.show_image, g.price, c.id, c.goods_count from goods g left JOIN (select * from shopping_cart c  where c.user_id = #{userId}) c on g.id = c.goods_id ")
+    List<ShopingCartGoods> getGoodsPage(Page<ShopingCartGoods> page, int userId);
 
 }
