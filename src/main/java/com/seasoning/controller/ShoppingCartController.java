@@ -100,12 +100,26 @@ public class ShoppingCartController {
             log.error("参数错误！", result.getAllErrors().get(0).getDefaultMessage());
             return CommonUtil.returnMsg(MsgConstant.PARAM_ERROR);
         }
-        ShoppingCart shoppingCart = new ShoppingCart();
-        BeanUtils.copyProperties(request, shoppingCart);
         User user = CommonUtil.getUserBySession(session);
-        shoppingCart.setUserId(user.getId());
-        shoppingCartService.save(shoppingCart);
-        return CommonUtil.returnMsg(MsgConstant.OK);
+        synchronized (user){
+            QueryWrapper<ShoppingCart> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("user_id", user.getId());
+            queryWrapper.eq("goods_id", request.getGoodsId());
+            ShoppingCart shoppingCartDb = shoppingCartService.getOne(queryWrapper, false);
+            if(shoppingCartDb == null){
+                ShoppingCart shoppingCart = new ShoppingCart();
+                BeanUtils.copyProperties(request, shoppingCart);
+                shoppingCart.setUserId(user.getId());
+                shoppingCartService.save(shoppingCart);
+            }else{
+                UpdateWrapper<ShoppingCart> updateWrapper = new UpdateWrapper<>();
+                updateWrapper.eq("user_id", user.getId());
+                updateWrapper.eq("goods_id", request.getGoodsId());
+                updateWrapper.set("goods_count", shoppingCartDb.getGoodsCount()+request.getGoodsCount());
+                shoppingCartService.update(updateWrapper);
+            }
+            return CommonUtil.returnMsg(MsgConstant.OK);
+        }
     }
 
     @ApiOperation(value = "获取购物车内商品总数量")

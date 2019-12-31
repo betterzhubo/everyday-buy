@@ -7,15 +7,12 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.seasoning.base.BaseMsg;
 import com.seasoning.base.MsgConstant;
-import com.seasoning.entity.Order;
-import com.seasoning.entity.OrderGoods;
-import com.seasoning.entity.User;
+import com.seasoning.entity.*;
+import com.seasoning.request.AddOrderByShoppingCartRequest;
 import com.seasoning.request.AddOrderRequest;
 import com.seasoning.request.OrderSearchRequest;
 import com.seasoning.request.UpdateOrderRequest;
-import com.seasoning.service.OrderGoodsService;
-import com.seasoning.service.OrderService;
-import com.seasoning.service.UserService;
+import com.seasoning.service.*;
 import com.seasoning.util.CommonUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -31,6 +28,7 @@ import javax.validation.Valid;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -53,6 +51,10 @@ public class OrderController {
     private OrderGoodsService orderGoodsService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private ShoppingCartService shoppingCartService;
+    @Autowired
+    private GoodsService goodsService;
 
     @ApiOperation(value = "根据订单id获取订单内容")
     @PostMapping("/page")
@@ -124,26 +126,83 @@ public class OrderController {
         if(user == null){
             return CommonUtil.returnMsg(MsgConstant.LOGIN_OVERTIME);
         }
-        Order order = new Order();
-        BeanUtils.copyProperties(request, order);
-        order.setUserId(user.getId());
-        int id = orderService.generateOrderId();
-        order.setId(id);
-        if(!orderService.save(order)){
-            return CommonUtil.returnMsg(MsgConstant.SQL_ERROR, "订单保存失败！");
-        }
+        synchronized (user){
 
-        List<OrderGoods> list = new ArrayList<>();
-        for(AddOrderRequest.OrderGoodsRequest orderGoodsRequest : request.getOrderGoods()){
-            OrderGoods orderGoods = new OrderGoods();
-            BeanUtils.copyProperties(orderGoodsRequest, orderGoods);
-            orderGoods.setOrderId(id);
-            list.add(orderGoods);
+            Order order = new Order();
+            BeanUtils.copyProperties(request, order);
+            order.setUserId(user.getId());
+            int id = orderService.generateOrderId();
+            order.setId(id);
+            if(!orderService.save(order)){
+                return CommonUtil.returnMsg(MsgConstant.SQL_ERROR, "订单保存失败！");
+            }
+
+            List<OrderGoods> list = new ArrayList<>();
+            for(AddOrderRequest.OrderGoodsRequest orderGoodsRequest : request.getOrderGoods()){
+                OrderGoods orderGoods = new OrderGoods();
+                BeanUtils.copyProperties(orderGoodsRequest, orderGoods);
+                orderGoods.setOrderId(id);
+                list.add(orderGoods);
+            }
+            if(!orderGoodsService.saveBatch(list)){
+                return CommonUtil.returnMsg(MsgConstant.SQL_ERROR, "订单商品保存失败！");
+            }
+            return CommonUtil.returnMsg(MsgConstant.OK, id);
         }
-        if(!orderGoodsService.saveBatch(list)){
-            return CommonUtil.returnMsg(MsgConstant.SQL_ERROR, "订单商品保存失败！");
+    }
+
+    @ApiOperation(value = "通过购物车添加订单")
+    @PostMapping("/addByShoppingCart")
+    public BaseMsg addByShoppingCart(@RequestBody @Valid AddOrderByShoppingCartRequest request, BindingResult result, HttpSession session){
+        if(result.hasErrors()){
+            log.error("参数错误！", result.getAllErrors().get(0).getDefaultMessage());
+            return CommonUtil.returnMsg(MsgConstant.PARAM_ERROR);
         }
-        return CommonUtil.returnMsg(MsgConstant.OK, id);
+        User user = CommonUtil.getUserBySession(session);
+        if(user == null){
+            return CommonUtil.returnMsg(MsgConstant.LOGIN_OVERTIME);
+        }
+        synchronized (user){
+
+            Order order = new Order();
+            BeanUtils.copyProperties(request, order);
+            order.setUserId(user.getId());
+            int id = orderService.generateOrderId();
+            order.setId(id);
+            if(!orderService.save(order)){
+                return CommonUtil.returnMsg(MsgConstant.SQL_ERROR, "订单保存失败！");
+            }
+
+            QueryWrapper<ShoppingCart> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("user_id", session.getId());
+            queryWrapper.in("id", request.getShoppingCartIds());
+            List<ShoppingCart> list = shoppingCartService.list(queryWrapper);
+            List<Integer> goodsIds = new ArrayList<>();
+            List<OrderGoods> orderGoodsList = new ArrayList<>();
+            for(ShoppingCart shoppingCart : list){
+                goodsIds.add(shoppingCart.getGoodsId());
+                OrderGoods orderGoods = new OrderGoods();
+                BeanUtils.copyProperties(shoppingCart, orderGoods);
+
+                orderGoods.setOrderId(id);
+                orderGoodsList.add(orderGoods);
+            }
+            Collection<Goods> goodsList = goodsService.listByIds(goodsIds);
+
+            for(OrderGoods orderGoods : orderGoodsList){
+                for(Goods goods : goodsList){
+                    if(!orderGoods.getGoodsId().equals(goods.getId())){
+                        continue;
+                    }
+                    BeanUtils.copyProperties(goods, orderGoods);
+                }
+            }
+
+            if(!orderGoodsService.saveBatch(orderGoodsList)){
+                return CommonUtil.returnMsg(MsgConstant.SQL_ERROR, "订单商品保存失败！");
+            }
+            return CommonUtil.returnMsg(MsgConstant.OK, id);
+        }
     }
 
     @ApiOperation(value = "根据订单id获取订单内容")
