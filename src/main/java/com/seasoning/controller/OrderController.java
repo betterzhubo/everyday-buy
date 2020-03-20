@@ -99,19 +99,21 @@ public class OrderController {
             updateWrapper.eq("user_id", user.getId());
         }
 
-        if(request.getConsigneeName() != null){
-            updateWrapper.set("consignee_name", request.getConsigneeName());
+        synchronized (user){
+            if(request.getConsigneeName() != null){
+                updateWrapper.set("consignee_name", request.getConsigneeName());
+            }
+            if(request.getConsigneeMobile() != null){
+                updateWrapper.set("consignee_mobile", request.getConsigneeMobile());
+            }
+            if(request.getConsigneeAddress() != null){
+                updateWrapper.set("consignee_address", request.getConsigneeAddress());
+            }
+            if(request.getOrderStatus() != null){
+                updateWrapper.set("order_status", request.getOrderStatus());
+            }
+            return CommonUtil.returnMsg(MsgConstant.OK, orderService.update(updateWrapper));
         }
-        if(request.getConsigneeMobile() != null){
-            updateWrapper.set("consignee_mobile", request.getConsigneeMobile());
-        }
-        if(request.getConsigneeAddress() != null){
-            updateWrapper.set("consignee_address", request.getConsigneeAddress());
-        }
-        if(request.getOrderStatus() != null){
-            updateWrapper.set("order_status", request.getOrderStatus());
-        }
-        return CommonUtil.returnMsg(MsgConstant.OK, orderService.update(updateWrapper));
     }
 
 

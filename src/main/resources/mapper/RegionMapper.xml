@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seasoning.mapper.RegionMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.seasoning.entity.Region">
+        <id column="areaid" property="areaid" />
+        <result column="parentid" property="parentid" />
+        <result column="shortname" property="shortname" />
+        <result column="areaname" property="areaname" />
+        <result column="merger_name" property="mergerName" />
+        <result column="level" property="level" />
+        <result column="pinyin" property="pinyin" />
+        <result column="code" property="code" />
+        <result column="zip_code" property="zipCode" />
+        <result column="first" property="first" />
+        <result column="lng" property="lng" />
+        <result column="lat" property="lat" />
+        <result column="isdisplay" property="isdisplay" />
+        <result column="hospitalid" property="hospitalid" />
+        <result column="ishot" property="ishot" />
+        <result column="oldid" property="oldid" />
+    </resultMap>
+
+    <resultMap id="GetRegionTreeResultMap" type="com.seasoning.request.tem.ProvinceTreeUnify">
+        <result column="provinceid" property="id" />
+        <result column="provincename" property="lable" />
+        <result column="provincelevel" property="level" />
+        <collection property="children" ofType="com.seasoning.request.tem.CityTreeUnify">
+            <result property="id" column="cityid"/>
+            <result property="lable" column="cityname"/>
+            <result column="citylevel" property="level" />
+            <collection property="children" ofType="com.seasoning.request.tem.AreaTreeUnify">
+                <result property="id" column="areaid"/>
+                <result property="lable" column="areaname"/>
+                <result column="arealevel" property="level" />
+            </collection>
+        </collection>
+    </resultMap>
+
+    <resultMap id="GetRegionTreePrimaryResultMap" type="com.seasoning.request.tem.ProvinceTree">
+        <result column="provinceid" property="provinceid" />
+        <result column="provincename" property="provincename" />
+        <result column="provincelevel" property="level" />
+        <collection property="cityTreeList" ofType="com.seasoning.request.tem.CityTree">
+            <result property="cityid" column="cityid"/>
+            <result property="cityname" column="cityname"/>
+            <result column="citylevel" property="level" />
+            <collection property="areaTreeList" ofType="com.seasoning.request.tem.AreaTree">
+                <result property="areaid" column="areaid"/>
+                <result property="areaname" column="areaname"/>
+                <result column="arealevel" property="level" />
+            </collection>
+        </collection>
+    </resultMap>
+
+    <resultMap id="GetRegionTreeResultMapLevelTwo" type="com.seasoning.request.tem.CityTree">
+        <result property="cityid" column="cityid"/>
+        <result property="cityname" column="cityname"/>
+        <result column="citylevel" property="level" />
+        <collection property="areaTreeList" ofType="com.seasoning.request.tem.AreaTree">
+            <result property="areaid" column="areaid"/>
+            <result property="areaname" column="areaname"/>
+            <result column="arealevel" property="level" />
+        </collection>
+    </resultMap>
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        areaid, parentid, shortname, areaname, merger_name, level, pinyin, code, zip_code, first, lng, lat, isdisplay, hospitalid, ishot, oldid
+    </sql>
+
+    <select id="getRegionTree" resultMap="GetRegionTreePrimaryResultMap">
+        SELECT
+            r1.areaid AS provinceid,
+            r1.areaname AS provincename,
+            r1.`level` AS provincelevel,
+            r2.areaid AS cityid,
+            r2.areaname AS cityname,
+            r2.`level` AS citylevel,
+            r3.areaid AS areaid,
+            r3.areaname AS areaname,
+            r3.`level` AS arealevel
+        FROM
+            region r1
+            LEFT JOIN region r2 ON r2.parentid = r1.areaid
+            LEFT JOIN region r3 ON r3.parentid = r2.areaid
+        WHERE
+            r1.`areaid` = 466
+    </select>
+
+    <select id="getRegionTreeLN" resultMap="GetRegionTreeResultMap">
+        SELECT
+            r1.areaid AS provinceid,
+            r1.areaname AS provincename,
+            r1.`level` AS provincelevel,
+            r2.areaid AS cityid,
+            r2.areaname AS cityname,
+            r2.`level` AS citylevel,
+            r3.areaid AS areaid,
+            r3.areaname AS areaname,
+            r3.`level` AS arealevel
+        FROM
+            region r1
+            LEFT JOIN region r2 ON r2.parentid = r1.areaid
+            LEFT JOIN region r3 ON r3.parentid = r2.areaid
+        WHERE
+            r1.`areaid` = 466
+    </select>
+
+    <select id="getRegionTreeLNLevelTwo" resultMap="GetRegionTreeResultMapLevelTwo">
+        SELECT
+            r1.areaid AS provinceid,
+            r1.areaname AS provincename,
+            r1.`level` AS provincelevel,
+            r2.areaid AS cityid,
+            r2.areaname AS cityname,
+            r2.`level` AS citylevel,
+            r3.areaid AS areaid,
+            r3.areaname AS areaname,
+            r3.`level` AS arealevel
+        FROM
+            region r1
+            LEFT JOIN region r2 ON r2.parentid = r1.areaid
+            LEFT JOIN region r3 ON r3.parentid = r2.areaid
+        WHERE
+            r1.`areaid` = 466
+    </select>
+</mapper>
