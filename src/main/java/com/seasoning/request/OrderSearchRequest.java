@@ -13,7 +13,7 @@ import lombok.Data;
 public class OrderSearchRequest {
 
     @ApiModelProperty(value = "订单唯一id")
-    private Long id;
+    private Integer id;
 
     @ApiModelProperty(value = "用户名")
     private String userName;
