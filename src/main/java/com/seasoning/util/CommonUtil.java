@@ -8,11 +8,20 @@ import com.seasoning.base.MsgConstant;
 import com.seasoning.entity.User;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.IOException;
+import java.io.StringReader;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 系统工具类
@@ -98,6 +107,39 @@ public class CommonUtil {
 		}
 		log.error("session data error : {}", JSONObject.toJSONString(obj));
 		return null;
+	}
+
+	public static Document parseXmlString(String xmlStr) {
+
+		try {
+			InputSource is = new InputSource(new StringReader(xmlStr));
+			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder builder = factory.newDocumentBuilder();
+			Document doc = builder.parse(is);
+			return doc;
+		} catch (Exception e) {
+			log.error("", e);
+		}
+		return null;
+	}
+	public static Map<String, String> getXmlBodyContext(String bodyXml){
+
+		Map<String, String> dataMap = new HashMap<>();
+
+		Document doc = parseXmlString(bodyXml);
+		if(null != doc){
+			NodeList rootNode = doc.getElementsByTagName("xml");
+			if(rootNode != null){
+
+				Node root = rootNode.item(0);
+				NodeList nodes = root.getChildNodes();
+				for(int i = 0;i < nodes.getLength(); i++){
+					Node node = nodes.item(i);
+					dataMap.put(node.getNodeName(), node.getTextContent());
+				}
+			}
+		}
+		return dataMap;
 	}
 
 }

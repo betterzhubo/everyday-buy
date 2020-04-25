@@ -61,7 +61,8 @@ mybatis-plus:
     map-underscore-to-camel-case: true
     cache-enabled: false
 wechat:
-  appId: wxc1ae2ed6a6c52fc5
-  appSecret: 181cab28bfe1c9a5be42d83aa81f7ae5
+  appId: wx5b0d3b802f7b88c7
+  appSecret: fac03bf1f699a4046ad26ff85006d455
+  mchId: 1588230011
 everyday-buy:
   resources-path: F:/static/

@@ -34,8 +34,8 @@ import java.util.List;
  */
 @Slf4j
 @Api(tags = "UserController", description = "用户操作相关接口")
-@RestController
 @RequestMapping("/user")
+@RestController
 public class UserController {
 
     @Autowired

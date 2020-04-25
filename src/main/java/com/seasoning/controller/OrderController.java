@@ -8,12 +8,10 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.seasoning.base.BaseMsg;
 import com.seasoning.base.MsgConstant;
 import com.seasoning.entity.*;
-import com.seasoning.request.AddOrderByShoppingCartRequest;
-import com.seasoning.request.AddOrderRequest;
-import com.seasoning.request.OrderSearchRequest;
-import com.seasoning.request.UpdateOrderRequest;
+import com.seasoning.request.*;
 import com.seasoning.service.*;
 import com.seasoning.util.CommonUtil;
+import com.seasoning.util.WechatApiUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -23,13 +21,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import java.io.IOException;
+import java.io.InputStream;
+import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -55,6 +58,8 @@ public class OrderController {
     private ShoppingCartService shoppingCartService;
     @Autowired
     private GoodsService goodsService;
+    @Autowired
+    private WechatApiUtil wechatApiUtil;
 
     @ApiOperation(value = "根据订单id获取订单内容")
     @PostMapping("/page")
@@ -139,12 +144,23 @@ public class OrderController {
                 return CommonUtil.returnMsg(MsgConstant.SQL_ERROR, "订单保存失败！");
             }
 
+            List<Integer> goodsIds = new ArrayList<>();
             List<OrderGoods> list = new ArrayList<>();
             for(AddOrderRequest.OrderGoodsRequest orderGoodsRequest : request.getOrderGoods()){
+                goodsIds.add(orderGoodsRequest.getGoodsId());
                 OrderGoods orderGoods = new OrderGoods();
                 BeanUtils.copyProperties(orderGoodsRequest, orderGoods);
                 orderGoods.setOrderId(id);
                 list.add(orderGoods);
+            }
+            Collection<Goods> goodsList = goodsService.listByIds(goodsIds);
+            for(OrderGoods orderGoods : list){
+                for(Goods goods : goodsList){
+                    if(!orderGoods.getGoodsId().equals(goods.getId())){
+                        continue;
+                    }
+                    BeanUtils.copyProperties(goods, orderGoods);
+                }
             }
             if(!orderGoodsService.saveBatch(list)){
                 return CommonUtil.returnMsg(MsgConstant.SQL_ERROR, "订单商品保存失败！");
@@ -190,7 +206,6 @@ public class OrderController {
                 orderGoodsList.add(orderGoods);
             }
             Collection<Goods> goodsList = goodsService.listByIds(goodsIds);
-
             for(OrderGoods orderGoods : orderGoodsList){
                 for(Goods goods : goodsList){
                     if(!orderGoods.getGoodsId().equals(goods.getId())){
@@ -199,7 +214,6 @@ public class OrderController {
                     BeanUtils.copyProperties(goods, orderGoods);
                 }
             }
-
             if(!orderGoodsService.saveBatch(orderGoodsList)){
                 return CommonUtil.returnMsg(MsgConstant.SQL_ERROR, "订单商品保存失败！");
             }
@@ -232,5 +246,86 @@ public class OrderController {
         return CommonUtil.returnMsg(MsgConstant.OK, order);
     }
 
+    @ApiOperation(value = "订单支付")
+    @PostMapping("/payOrder")
+    public BaseMsg<String> payOrder(@RequestBody PayOrderRequest request){
+
+        Integer orderId = request.getOrderId();
+        if(orderId == null || orderId == 0){
+            return CommonUtil.returnMsg(MsgConstant.PARAM_ERROR);
+        }
+        synchronized (orderId){
+
+            Order order = orderService.getById(request.getOrderId());
+            if(order == null){
+                return CommonUtil.returnMsg(MsgConstant.DATA_ERROR);
+            }
+            if(1 != order.getOrderStatus()){
+                return CommonUtil.returnMsg(MsgConstant.ORDER_STATUS);
+            }
+
+            List<OrderGoods> list = orderGoodsService.list(new QueryWrapper<OrderGoods>().eq("order_id", orderId));
+            BigDecimal totalFee = new BigDecimal(0);
+            for(OrderGoods orderGoods : list){
+                totalFee = totalFee.add(orderGoods.getGoodsPrice().multiply(new BigDecimal(orderGoods.getGoodsCount())));
+            }
+            String totalFeeStr = totalFee.multiply(new BigDecimal(100)).toString();
+            String prepayId = wechatApiUtil.placeOrder(orderId, totalFeeStr);
+
+            if(prepayId == null){
+                return CommonUtil.returnMsg(MsgConstant.PAY_FAIL);
+            }
+            return CommonUtil.returnMsg(MsgConstant.OK, prepayId);
+        }
+    }
+
+    @ApiOperation(value = "订单支付通知")
+    @PostMapping("/payOrderNotice")
+    public String payOrder(HttpServletRequest request){
+
+        String requestParam = null;
+        try(InputStream is = request.getInputStream()){
+            StringBuilder sb = new StringBuilder();
+            byte[] b = new byte[4096];
+            for (int n; (n = is.read(b)) != -1;)
+            {
+                sb.append(new String(b, 0, n));
+            }
+            requestParam = sb.toString();
+        }
+        catch (IOException e) {
+            log.error("", e);
+        }
+        Map<String, String> result = CommonUtil.getXmlBodyContext(requestParam);
+
+        if(request == null){
+            return "<xml><return_code>FAIL</return_code></xml>";
+        }
+        if(StringUtils.equals(result.get("return_code"), "FAIL")){
+            return "<xml><return_code>FAIL</return_code></xml>";
+        }
+        if(StringUtils.equals(result.get("result_code"), "FAIL")){
+            return "<xml><return_code>FAIL</return_code></xml>";
+        }
+
+        Integer orderId = Integer.valueOf(result.get("out_trade_no"));
+        synchronized (orderId){
+            Order order = orderService.getById(orderId);
+            if(order.getOrderStatus() != 1){
+                return "<xml><return_code>FAIL</return_code></xml>";
+            }
+            UpdateWrapper<Order> updateWrapper = new UpdateWrapper<>();
+            updateWrapper.eq("id", orderId);
+            updateWrapper.set("order_status", 2);
+            if(!orderService.update(updateWrapper)){
+                return "<xml><return_code>FAIL</return_code></xml>";
+            }
+        }
+        String respons = "<xml>"
+                        +"<return_code>SUCCESS</return_code>"
+                        +"<return_msg>OK</return_msg>"
+                        +"</xml>";
+        return respons;
+    }
 }
 
