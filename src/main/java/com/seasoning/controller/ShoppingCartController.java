@@ -133,7 +133,7 @@ public class ShoppingCartController {
         wrapper.select("sum(goods_count) total");
         wrapper.groupBy("user_id");
         Map<String, Object> map = shoppingCartService.getMap(wrapper);
-		if(map == null || null == map.get("total")){
+        if(map == null || null == map.get("total")){
             return CommonUtil.returnMsg(MsgConstant.OK, 0);
         }
         BigDecimal bd = (BigDecimal) map.get("total");

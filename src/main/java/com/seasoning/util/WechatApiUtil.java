@@ -8,13 +8,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.stream.XMLStreamWriter;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -31,6 +26,9 @@ public class WechatApiUtil {
 
     @Value("${wechat.mchId}")
     private String mchId;
+
+    @Value("${wechat.notifyUrl}")
+    private String notifyUrl;
 
     private String ipAddr;
 
@@ -79,14 +77,14 @@ public class WechatApiUtil {
         long rand = RandomUtils.nextInt(100,999);
         String nonce_str = DateFormatUtils.format(new Date(), "yyyyMMdd")+rand;
         //订单日期
-        SimpleDateFormat df = new SimpleDateFormat("yyyyMMdd");//设置日期格式
-        System.out.println(df.format(new Date()));
-        String orderDate = df.format(new Date());
+//        SimpleDateFormat df = new SimpleDateFormat("yyyyMMdd");//设置日期格式
+//        System.out.println(df.format(new Date()));
+//        String orderDate = df.format(new Date());
         //商品名称
 //        String body = wxMinPayIn.getOrderSubject();
         //获取本机的ip地址
-        String spbill_create_ip = "www.baidu.com";
-        String signSource="appid="+appId+"&body=成天买调味品&mch_id="+mchId+"&nonce_str="+nonce_str+"&notify_url="+spbill_create_ip
+//        String notify_url = "http://chengtianmai.cn:9999/order/notice";
+        String signSource="appid="+appId+"&body=成天买调味品&mch_id="+mchId+"&nonce_str="+nonce_str+"&notify_url="+notifyUrl
                 +"&out_trade_no="+orderId+"&spbill_create_ip="+this.ipAddr+"&total_fee="+totalFee+"&trade_type=JSAPI&key="+appSecret;
         System.out.println(signSource);
         String sign = MD5Util.EncryptionStr32(signSource).toUpperCase();
@@ -96,7 +94,7 @@ public class WechatApiUtil {
                 + "<body>" + "成天买调味品" + "</body>"
                 + "<mch_id>" + mchId + "</mch_id>"
                 + "<nonce_str>" + nonce_str + "</nonce_str>"
-                + "<notify_url>" + spbill_create_ip + "</notify_url>"
+                + "<notify_url>" + notifyUrl + "</notify_url>"
                 + "<out_trade_no>" + orderId + "</out_trade_no>"
                 + "<spbill_create_ip>" + this.ipAddr + "</spbill_create_ip>"
                 + "<total_fee>" + totalFee + "</total_fee>"

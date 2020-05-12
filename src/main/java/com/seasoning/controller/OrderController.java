@@ -138,6 +138,7 @@ public class OrderController {
             Order order = new Order();
             BeanUtils.copyProperties(request, order);
             order.setUserId(user.getId());
+            order.setOrderStatus(1);
             int id = orderService.generateOrderId();
             order.setId(id);
             if(!orderService.save(order)){
@@ -185,6 +186,7 @@ public class OrderController {
             Order order = new Order();
             BeanUtils.copyProperties(request, order);
             order.setUserId(user.getId());
+            order.setOrderStatus(1);
             int id = orderService.generateOrderId();
             order.setId(id);
             if(!orderService.save(order)){
@@ -238,16 +240,16 @@ public class OrderController {
             Duration duration = Duration.between(order.getCreateTime(), LocalDateTime.now());
             if(duration.getSeconds() > 600){
                 UpdateWrapper<Order> updateWrapper = new UpdateWrapper<>();
-                updateWrapper .eq("id",id).set("order_status", 5);
+                updateWrapper.eq("id",id).set("order_status", 5);
                 orderService.update(updateWrapper);
-                order.setOrderStatus(0);
+                order.setOrderStatus(5);
             }
         }
         return CommonUtil.returnMsg(MsgConstant.OK, order);
     }
 
     @ApiOperation(value = "订单支付")
-    @PostMapping("/payOrder")
+    @PostMapping("/pay")
     public BaseMsg<String> payOrder(@RequestBody PayOrderRequest request){
 
         Integer orderId = request.getOrderId();
@@ -280,7 +282,7 @@ public class OrderController {
     }
 
     @ApiOperation(value = "订单支付通知")
-    @PostMapping("/payOrderNotice")
+    @PostMapping("/notice")
     public String payOrder(HttpServletRequest request){
 
         String requestParam = null;
