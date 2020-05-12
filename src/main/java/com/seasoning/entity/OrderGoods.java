@@ -35,7 +35,7 @@ public class OrderGoods implements Serializable {
     private Integer orderId;
 
     @TableField("goods_id")
-    private String goodsId;
+    private Integer goodsId;
 
     @TableField("goods_name")
     private String goodsName;
