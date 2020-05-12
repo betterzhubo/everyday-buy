@@ -161,6 +161,7 @@ public class OrderController {
                         continue;
                     }
                     BeanUtils.copyProperties(goods, orderGoods);
+                    orderGoods.setGoodsPrice(goods.getPrice());
                 }
             }
             if(!orderGoodsService.saveBatch(list)){
