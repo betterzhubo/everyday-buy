@@ -214,6 +214,7 @@ public class OrderController {
                         continue;
                     }
                     BeanUtils.copyProperties(goods, orderGoods);
+                    orderGoods.setGoodsPrice(goods.getPrice());
                 }
             }
             if(!orderGoodsService.saveBatch(orderGoodsList)){
@@ -271,7 +272,7 @@ public class OrderController {
             for(OrderGoods orderGoods : list){
                 totalFee = totalFee.add(orderGoods.getGoodsPrice().multiply(new BigDecimal(orderGoods.getGoodsCount())));
             }
-            String totalFeeStr = totalFee.multiply(new BigDecimal(100)).toString();
+            String totalFeeStr = totalFee.multiply(new BigDecimal(100)).intValue()+ "";
             String prepayId = wechatApiUtil.placeOrder(orderId, totalFeeStr);
 
             if(prepayId == null){
