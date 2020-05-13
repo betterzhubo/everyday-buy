@@ -1,5 +1,6 @@
 package com.seasoning.util;
 
+import com.seasoning.request.tem.PaymentParam;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -51,7 +52,7 @@ public class WechatApiUtil {
         return HttpUtil.doGet(CODE_SESSION_URL, param);
     }
 
-    public String placeOrder(Integer orderId, String totalFee, String openid){
+    public PaymentParam placeOrder(Integer orderId, String totalFee, String openid){
 
         String result = HttpUtil.postXML(PLACE_ORDER_URL ,paramXml(orderId,totalFee, openid));
         if(result == null){
@@ -67,7 +68,19 @@ public class WechatApiUtil {
             log.error(result);
             return null;
         }
-        return map.get("prepay_id");
+        long rand = RandomUtils.nextInt(100,999);
+        String nonce_str = DateFormatUtils.format(new Date(), "yyyyMMdd")+rand;
+        String timestamp = System.currentTimeMillis() / 1000 + "";
+        PaymentParam paymentParam = new PaymentParam();
+        paymentParam.setNonceStr(nonce_str);
+        paymentParam.setTimeStamp(timestamp);
+        paymentParam.setPackageParam("prepay_id="+map.get("prepay_id"));
+        String signSource="appid="+appId+"&nonce_str="+nonce_str+"&package="+paymentParam.getPackageParam()
+                    +"&signType=MD5&timeStamp="+timestamp+"&key="+appSecret;
+        System.out.println(signSource);
+        String sign = MD5Util.EncryptionStr32(signSource).toUpperCase();
+        paymentParam.setPaySign(sign);
+        return paymentParam;
     }
 
 

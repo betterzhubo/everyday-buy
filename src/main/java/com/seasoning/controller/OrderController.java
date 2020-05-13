@@ -9,6 +9,7 @@ import com.seasoning.base.BaseMsg;
 import com.seasoning.base.MsgConstant;
 import com.seasoning.entity.*;
 import com.seasoning.request.*;
+import com.seasoning.request.tem.PaymentParam;
 import com.seasoning.service.*;
 import com.seasoning.util.CommonUtil;
 import com.seasoning.util.WechatApiUtil;
@@ -252,7 +253,7 @@ public class OrderController {
 
     @ApiOperation(value = "订单支付")
     @PostMapping("/pay")
-    public BaseMsg<String> payOrder(@RequestBody PayOrderRequest request, HttpSession session){
+    public BaseMsg<PaymentParam> payOrder(@RequestBody PayOrderRequest request, HttpSession session){
 
         Integer orderId = request.getOrderId();
         if(orderId == null || orderId == 0){
@@ -278,12 +279,12 @@ public class OrderController {
                 totalFee = totalFee.add(orderGoods.getGoodsPrice().multiply(new BigDecimal(orderGoods.getGoodsCount())));
             }
             String totalFeeStr = totalFee.multiply(new BigDecimal(100)).intValue()+ "";
-            String prepayId = wechatApiUtil.placeOrder(orderId, totalFeeStr, user.getOpenid());
+            PaymentParam paymentParam = wechatApiUtil.placeOrder(orderId, totalFeeStr, user.getOpenid());
 
-            if(prepayId == null){
+            if(paymentParam == null){
                 return CommonUtil.returnMsg(MsgConstant.PAY_FAIL);
             }
-            return CommonUtil.returnMsg(MsgConstant.OK, prepayId);
+            return CommonUtil.returnMsg(MsgConstant.OK, paymentParam);
         }
     }
 
