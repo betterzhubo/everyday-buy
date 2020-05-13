@@ -51,9 +51,9 @@ public class WechatApiUtil {
         return HttpUtil.doGet(CODE_SESSION_URL, param);
     }
 
-    public String placeOrder(Integer orderId, String totalFee){
+    public String placeOrder(Integer orderId, String totalFee, String openid){
 
-        String result = HttpUtil.postXML(PLACE_ORDER_URL ,paramXml(orderId,totalFee));
+        String result = HttpUtil.postXML(PLACE_ORDER_URL ,paramXml(orderId,totalFee, openid));
         if(result == null){
             return null;
         }
@@ -71,7 +71,7 @@ public class WechatApiUtil {
     }
 
 
-    private String paramXml(Integer orderId, String totalFee){
+    private String paramXml(Integer orderId, String totalFee, String openid){
         //生成的随机字符串
         //String nonce_str = StringUtils.getRandomStringByLength(32);
         long rand = RandomUtils.nextInt(100,999);
@@ -84,13 +84,14 @@ public class WechatApiUtil {
 //        String body = wxMinPayIn.getOrderSubject();
         //获取本机的ip地址
 //        String notify_url = "http://chengtianmai.cn:9999/order/notice";
-        String signSource="appid="+appId+"&body=成天买调味品&mch_id="+mchId+"&nonce_str="+nonce_str+"&notify_url="+notifyUrl
+        String signSource="appid="+appId+"&body=成天买调味品&mch_id="+mchId+"&nonce_str="+nonce_str+"&notify_url="+notifyUrl+"&openid="+openid
                 +"&out_trade_no="+orderId+"&spbill_create_ip="+this.ipAddr+"&total_fee="+totalFee+"&trade_type=JSAPI&key="+appSecret;
         System.out.println(signSource);
         String sign = MD5Util.EncryptionStr32(signSource).toUpperCase();
         //支付金额，单位：分，这边需要转成字符串类型，否则后面的签名会失败,（xml拼接字段依据自己公司需求而定）
         String xml = "<xml>"
                 + "<appid>" + appId + "</appid>"
+                + "<openid>" + openid + "</openid>"
                 + "<body>" + "成天买调味品" + "</body>"
                 + "<mch_id>" + mchId + "</mch_id>"
                 + "<nonce_str>" + nonce_str + "</nonce_str>"

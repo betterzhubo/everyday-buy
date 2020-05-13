@@ -20,6 +20,6 @@
     </sql>
 
     <select id="findLastId" resultType="int">
-        select id from `order` order by id desc limit 1
+        select id from `order` order by create_time desc, id desc limit 1
     </select>
 </mapper>

@@ -234,7 +234,7 @@ public class OrderController {
         QueryWrapper<Order> wrapper = new QueryWrapper<>();
         wrapper.eq("id", id);
         User user = CommonUtil.getUserBySession(session);
-        if(user == null){
+        if(user != null){
             wrapper.eq("user_id", user.getId());
         }
         Order order = orderService.getOne(wrapper);
@@ -252,11 +252,15 @@ public class OrderController {
 
     @ApiOperation(value = "订单支付")
     @PostMapping("/pay")
-    public BaseMsg<String> payOrder(@RequestBody PayOrderRequest request){
+    public BaseMsg<String> payOrder(@RequestBody PayOrderRequest request, HttpSession session){
 
         Integer orderId = request.getOrderId();
         if(orderId == null || orderId == 0){
             return CommonUtil.returnMsg(MsgConstant.PARAM_ERROR);
+        }
+        User user = CommonUtil.getUserBySession(session);
+        if(user == null){
+            return CommonUtil.returnMsg(MsgConstant.LOGIN_OVERTIME);
         }
         synchronized (orderId){
 
@@ -274,7 +278,7 @@ public class OrderController {
                 totalFee = totalFee.add(orderGoods.getGoodsPrice().multiply(new BigDecimal(orderGoods.getGoodsCount())));
             }
             String totalFeeStr = totalFee.multiply(new BigDecimal(100)).intValue()+ "";
-            String prepayId = wechatApiUtil.placeOrder(orderId, totalFeeStr);
+            String prepayId = wechatApiUtil.placeOrder(orderId, totalFeeStr, user.getOpenid());
 
             if(prepayId == null){
                 return CommonUtil.returnMsg(MsgConstant.PAY_FAIL);
