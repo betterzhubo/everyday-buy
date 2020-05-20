@@ -12,6 +12,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Arrays;
 
 /**
  * 统一日志处理(包括请求日志与返回日志),放入info日志等级
@@ -37,7 +38,7 @@ public class LogAspect {
         log.info("请求地址:" + request.getRequestURL().toString());
         log.info("请求方式:" + request.getMethod());
         log.info("请求类方法:" + joinPoint.getSignature());
-        log.info("请求类方法参数:" + JSONObject.toJSONString(joinPoint.getArgs()));
+        log.info("请求类方法参数:" + Arrays.toString(joinPoint.getArgs()));
         log.info("===============请求内容===============");
     }
 

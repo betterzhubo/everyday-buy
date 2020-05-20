@@ -75,7 +75,7 @@ public class WechatApiUtil {
         paymentParam.setNonceStr(nonce_str);
         paymentParam.setTimeStamp(timestamp);
         paymentParam.setPackageParam("prepay_id="+map.get("prepay_id"));
-        String signSource="appid="+appId+"&nonce_str="+nonce_str+"&package="+paymentParam.getPackageParam()
+        String signSource="appId="+appId+"&nonceStr="+nonce_str+"&package="+paymentParam.getPackageParam()
                     +"&signType=MD5&timeStamp="+timestamp+"&key="+appSecret;
         System.out.println(signSource);
         String sign = MD5Util.EncryptionStr32(signSource).toUpperCase();

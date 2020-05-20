@@ -62,7 +62,7 @@ public class OrderController {
     @Autowired
     private WechatApiUtil wechatApiUtil;
 
-    @ApiOperation(value = "根据订单id获取订单内容")
+    @ApiOperation(value = "获取订单列表")
     @PostMapping("/page")
     public BaseMsg<IPage<Order>> page(@RequestBody OrderSearchRequest request, HttpSession session)  {
 
