@@ -196,9 +196,12 @@ public class OrderController {
             }
 
             QueryWrapper<ShoppingCart> queryWrapper = new QueryWrapper<>();
-            queryWrapper.eq("user_id", session.getId());
+            queryWrapper.eq("user_id", user.getId());
             queryWrapper.in("id", request.getShoppingCartIds());
             List<ShoppingCart> list = shoppingCartService.list(queryWrapper);
+            if(list.size() == 0){
+                return CommonUtil.returnMsg(MsgConstant.SHOPPINGCART_NULL);
+            }
             List<Integer> goodsIds = new ArrayList<>();
             List<OrderGoods> orderGoodsList = new ArrayList<>();
             for(ShoppingCart shoppingCart : list){

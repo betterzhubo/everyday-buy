@@ -16,11 +16,11 @@ public class ScheduleTask {
     private OrderService orderService;
 
     @Scheduled(cron = "0 1 0 * * ?")
-    private void stepStatistics() {
+    private void updateDay() {
 
-        log.info("statistics step data begin!");
+        log.info("order id date update begin!");
 
         orderService.updateDay();
-        log.info("statistics step data end!");
+        log.info("order id data update end!");
     }
 }

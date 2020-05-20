@@ -52,6 +52,7 @@ public enum MsgConstant {
 	ORDER_STATUS(13011, "订单状态错误！"),
 	/** 13012, 订单支付失败！ */
 	PAY_FAIL(13012, "订单支付失败！"),
+	SHOPPINGCART_NULL(13013, "购物车是空的！"),
 
 
 

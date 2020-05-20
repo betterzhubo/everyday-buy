@@ -2,6 +2,7 @@ package com.seasoning.controller;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.seasoning.base.MsgConstant;
 import com.seasoning.base.ResponseBaseModelT;
 import com.seasoning.entity.OrderGoods;
 import com.seasoning.service.OrderGoodsService;
@@ -37,6 +38,9 @@ public class OrderGoodsController {
 
         ResponseBaseModelT<List<OrderGoods>> responseBaseModelT = new ResponseBaseModelT();
         List<OrderGoods> list = orderGoodsService.list(queryWrapper);
+        if(list.size() == 0){
+            return new ResponseBaseModelT<>(MsgConstant.DATA_ERROR);
+        }
         responseBaseModelT.setData(list);
         return responseBaseModelT;
     }
