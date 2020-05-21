@@ -38,6 +38,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
         List<String> excludeList = new ArrayList<>();
         excludeList.add("/");
         excludeList.add("/user/login");
+		excludeList.add("/order/notice");
         excludeList.add("/login");
         excludeList.add("/swagger-ui.html");
         excludeList.add("/webjars/**");
