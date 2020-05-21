@@ -10,6 +10,7 @@ import com.seasoning.base.MsgConstant;
 import com.seasoning.entity.*;
 import com.seasoning.request.*;
 import com.seasoning.request.tem.PaymentParam;
+import com.seasoning.response.OrderListResponse;
 import com.seasoning.service.*;
 import com.seasoning.util.CommonUtil;
 import com.seasoning.util.WechatApiUtil;
@@ -30,10 +31,7 @@ import java.io.InputStream;
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * <p>
@@ -60,11 +58,86 @@ public class OrderController {
     @Autowired
     private GoodsService goodsService;
     @Autowired
+    private ViewOrderGoodsService viewOrderGoodsService;
+    @Autowired
     private WechatApiUtil wechatApiUtil;
 
-    @ApiOperation(value = "获取订单列表")
+    @ApiOperation(value = "获取订单详情接口")
+    @GetMapping("/detail/{id}")
+    public BaseMsg<OrderListResponse> detail(@PathVariable Integer id, HttpSession session) {
+
+        OrderListResponse response = null;
+        QueryWrapper<ViewOrderGoods> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("id", id);
+        List<ViewOrderGoods> list = viewOrderGoodsService.list(queryWrapper);
+        for(ViewOrderGoods orderGoods : list) {
+            if (response == null) {
+                response = new OrderListResponse();
+                response.setOrderGoodsList(new ArrayList<>());
+                response.setCreateTime(orderGoods.getCreateTime());
+                response.setOrderId(orderGoods.getId());
+                response.setOrderStatus(orderGoods.getOrderStatus());
+                response.setConsigneeAddress(orderGoods.getConsigneeAddress());
+            }
+            OrderListResponse.OrderGoodsResponse orderGoodsResponse = new OrderListResponse().new OrderGoodsResponse();
+            response.getOrderGoodsList().add(orderGoodsResponse);
+            orderGoodsResponse.setGoodsName(orderGoods.getGoodsName());
+            orderGoodsResponse.setShowImage(orderGoods.getShowImage());
+            orderGoodsResponse.setGoodsId(orderGoods.getGoodsId());
+            Integer goodsCount = response.getTotalCount() + orderGoods.getGoodsCount();
+            response.setTotalCount(goodsCount);
+            BigDecimal totalPrice = response.getTotalPrice().add(orderGoods.getGoodsPrice());
+            response.setTotalPrice(totalPrice);
+        }
+        return CommonUtil.returnMsg(MsgConstant.OK, response);
+    }
+
+    @ApiOperation(value = "获取订单列表接口")
+    @GetMapping("/list/{status}")
+    public BaseMsg<List<OrderListResponse>> list(@PathVariable Integer status, HttpSession session) {
+
+        QueryWrapper<ViewOrderGoods> queryWrapper = new QueryWrapper<>();
+
+        User user = CommonUtil.getUserBySession(session);
+        if(user != null){
+            queryWrapper.eq("user_id", user.getId());
+        }
+        if(null != status && -1 != status){
+            queryWrapper.eq("order_status", status);
+        }
+        queryWrapper.orderByDesc("create_time");
+
+        List<ViewOrderGoods> list = viewOrderGoodsService.list(queryWrapper);
+
+        Map<Integer, OrderListResponse> map = new HashMap<>();
+        List<OrderListResponse> responseLisr = new ArrayList();
+        for(ViewOrderGoods orderGoods : list){
+            OrderListResponse response = map.get(orderGoods.getId());
+            if(response == null){
+                response = new OrderListResponse();
+                response.setOrderGoodsList(new ArrayList<>());
+                response.setCreateTime(orderGoods.getCreateTime());
+                response.setOrderId(orderGoods.getId());
+                response.setOrderStatus(orderGoods.getOrderStatus());
+                response.setConsigneeAddress(orderGoods.getConsigneeAddress());
+            }
+            OrderListResponse.OrderGoodsResponse orderGoodsResponse = new OrderListResponse().new OrderGoodsResponse();
+            response.getOrderGoodsList().add(orderGoodsResponse);
+            orderGoodsResponse.setGoodsName(orderGoods.getGoodsName());
+            orderGoodsResponse.setShowImage(orderGoods.getShowImage());
+            orderGoodsResponse.setGoodsId(orderGoods.getGoodsId());
+            Integer goodsCount = response.getTotalCount() + orderGoods.getGoodsCount();
+            response.setTotalCount(goodsCount);
+            BigDecimal totalPrice = response.getTotalPrice().add(orderGoods.getGoodsPrice());
+            response.setTotalPrice(totalPrice);
+            responseLisr.add(response);
+        }
+        return CommonUtil.returnMsg(MsgConstant.OK, responseLisr);
+    }
+
+    @ApiOperation(value = "获取订单列表（后台用）")
     @PostMapping("/page")
-    public BaseMsg<IPage<Order>> page(@RequestBody OrderSearchRequest request, HttpSession session)  {
+    public BaseMsg<IPage<Order>> page(@RequestBody OrderSearchRequest request, HttpSession session) {
 
         QueryWrapper<Order> queryWrapper = new QueryWrapper<>();
 
@@ -82,7 +155,7 @@ public class OrderController {
         if(user != null){
             queryWrapper.eq("user_id", user.getId());
         }
-        if(null != request.getOrderStatus()){
+        if(null != request.getOrderStatus() && -1 != request.getOrderStatus()){
             queryWrapper.eq("order_status", request.getOrderStatus());
         }
         queryWrapper.orderByDesc("create_time");
@@ -230,7 +303,7 @@ public class OrderController {
     }
 
     @ApiOperation(value = "根据订单id获取订单内容")
-    @GetMapping("/get/{orderId}")
+    @GetMapping("/get/{id}")
     public BaseMsg<Order> get(@PathVariable int id, HttpSession session){
         if(id <= 0){
             return CommonUtil.returnMsg(MsgConstant.PARAM_ERROR);

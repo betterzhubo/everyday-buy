@@ -26,7 +26,7 @@ public class RouterController {
     @Autowired
     private UserService userService;
 
-    @GetMapping("/")
+    @GetMapping("/index")
     public String index(){
         return "login";
     }
