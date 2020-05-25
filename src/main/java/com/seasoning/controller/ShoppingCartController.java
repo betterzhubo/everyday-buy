@@ -80,7 +80,7 @@ public class ShoppingCartController {
         if(shoppingCart == null){
             return CommonUtil.returnMsg(MsgConstant.DATA_ERROR);
         }
-        if(shoppingCart.getGoodsCount() == 1){
+        if(operate == -1 && shoppingCart.getGoodsCount() == 1){
             shoppingCartService.removeById(id);
             return CommonUtil.returnMsg(MsgConstant.OK);
         }
@@ -88,7 +88,7 @@ public class ShoppingCartController {
         UpdateWrapper<ShoppingCart> updateWrapper = new UpdateWrapper<>();
         updateWrapper.eq("id", id);
         updateWrapper.eq("user_id", user.getId());
-        updateWrapper.set("shopping_cart", shoppingCart.getGoodsCount() + operate);
+        updateWrapper.set("goods_count", shoppingCart.getGoodsCount() + operate);
         shoppingCartService.update(updateWrapper);
         return CommonUtil.returnMsg(MsgConstant.OK);
     }

@@ -52,38 +52,43 @@ public class WechatApiUtil {
         return HttpUtil.doGet(CODE_SESSION_URL, param);
     }
 
-    public PaymentParam placeOrder(Integer orderId, String totalFee, String openid){
+    public String placeOrder(Integer orderId, String totalFee, String openid) {
 
-        String result = HttpUtil.postXML(PLACE_ORDER_URL ,paramXml(orderId,totalFee, openid));
-        if(result == null){
+        String result = HttpUtil.postXML(PLACE_ORDER_URL, paramXml(orderId, totalFee, openid));
+        if (result == null) {
             return null;
         }
         Map<String, String> map = CommonUtil.getXmlBodyContext(result);
 
-        if(StringUtils.equals(map.get("return_code"), "FAIL")){
+        if (StringUtils.equals(map.get("return_code"), "FAIL")) {
             log.error(result);
             return null;
         }
-        if(StringUtils.equals(map.get("result_code"), "FAIL")){
+        if (StringUtils.equals(map.get("result_code"), "FAIL")) {
             log.error(result);
             return null;
         }
-        long rand = RandomUtils.nextInt(100,999);
-        String nonce_str = DateFormatUtils.format(new Date(), "yyyyMMdd")+rand;
-        String timestamp = System.currentTimeMillis() / 1000 + "";
-        PaymentParam paymentParam = new PaymentParam();
-        paymentParam.setNonceStr(nonce_str);
-        paymentParam.setTimeStamp(timestamp);
-        paymentParam.setPackageParam("prepay_id="+map.get("prepay_id"));
-        String signSource="appId="+appId+"&nonceStr="+nonce_str+"&package="+paymentParam.getPackageParam()
-                    +"&signType=MD5&timeStamp="+timestamp+"&key="+appSecret;
-        System.out.println(signSource);
-        String sign = MD5Util.EncryptionStr32(signSource).toUpperCase();
-        paymentParam.setPaySign(sign);
-        return paymentParam;
+        return map.get("prepay_id");
     }
-
-
+    public String getSign(String nonceStr, String timeStamp, String prepayId){
+        String signSource="appId="+appId+"&nonceStr="+nonceStr+"&package=prepay_id="+prepayId
+                +"&signType=MD5&timeStamp="+timeStamp+"&key="+appSecret;
+        System.out.println(signSource);
+        return MD5Util.EncryptionStr32(signSource).toUpperCase();
+    }
+//        long rand = RandomUtils.nextInt(100,999);
+//        String nonce_str = DateFormatUtils.format(new Date(), "yyyyMMdd")+rand;
+//        String timestamp = System.currentTimeMillis() / 1000 + "";
+//        PaymentParam paymentParam = new PaymentParam();
+//        paymentParam.setNonceStr(nonce_str);
+//        paymentParam.setTimeStamp(timestamp);
+//        paymentParam.setPackageParam("prepay_id="+map.get("prepay_id"));
+//        String signSource="appId="+appId+"&nonceStr="+nonce_str+"&package="+paymentParam.getPackageParam()
+//                    +"&signType=MD5&timeStamp="+timestamp+"&key="+appSecret;
+//        System.out.println(signSource);
+//        String sign = MD5Util.EncryptionStr32(signSource).toUpperCase();
+//        paymentParam.setPaySign(sign);
+//        return paymentParam;
     private String paramXml(Integer orderId, String totalFee, String openid){
         //生成的随机字符串
         //String nonce_str = StringUtils.getRandomStringByLength(32);

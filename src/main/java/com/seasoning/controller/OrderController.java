@@ -13,11 +13,15 @@ import com.seasoning.request.tem.PaymentParam;
 import com.seasoning.response.OrderListResponse;
 import com.seasoning.service.*;
 import com.seasoning.util.CommonUtil;
+import com.seasoning.util.MD5Util;
 import com.seasoning.util.WechatApiUtil;
+import com.sun.org.apache.xpath.internal.operations.Or;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateFormatUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
@@ -81,6 +85,8 @@ public class OrderController {
             }
             OrderListResponse.OrderGoodsResponse orderGoodsResponse = new OrderListResponse().new OrderGoodsResponse();
             response.getOrderGoodsList().add(orderGoodsResponse);
+            orderGoodsResponse.setGoodsCount(orderGoods.getGoodsCount());
+            orderGoodsResponse.setGoodsPrice(orderGoods.getGoodsPrice());
             orderGoodsResponse.setGoodsName(orderGoods.getGoodsName());
             orderGoodsResponse.setShowImage(orderGoods.getShowImage());
             orderGoodsResponse.setGoodsId(orderGoods.getGoodsId());
@@ -88,6 +94,16 @@ public class OrderController {
             response.setTotalCount(goodsCount);
             BigDecimal totalPrice = response.getTotalPrice().add(orderGoods.getGoodsPrice());
             response.setTotalPrice(totalPrice);
+        }
+
+        if(response != null && 1 == response.getOrderStatus()){
+            Duration duration = Duration.between(response.getCreateTime(), LocalDateTime.now());
+            if(duration.getSeconds() > 600){
+                UpdateWrapper<Order> updateWrapper = new UpdateWrapper<>();
+                updateWrapper.eq("id",id).set("order_status", 5);
+                orderService.update(updateWrapper);
+                response.setOrderStatus(5);
+            }
         }
         return CommonUtil.returnMsg(MsgConstant.OK, response);
     }
@@ -110,8 +126,18 @@ public class OrderController {
         List<ViewOrderGoods> list = viewOrderGoodsService.list(queryWrapper);
 
         Map<Integer, OrderListResponse> map = new HashMap<>();
-        List<OrderListResponse> responseLisr = new ArrayList();
+        List<OrderListResponse> responseList = new ArrayList();
+        List<Integer> cancelIds = new ArrayList<>();
         for(ViewOrderGoods orderGoods : list){
+
+            Duration duration = Duration.between(orderGoods.getCreateTime(), LocalDateTime.now());
+            if(duration.getSeconds() > 600){
+                cancelIds.add(orderGoods.getId());
+                if(status == 1){
+                    continue;
+                }
+                orderGoods.setOrderStatus(5);
+            }
             OrderListResponse response = map.get(orderGoods.getId());
             if(response == null){
                 response = new OrderListResponse();
@@ -120,6 +146,7 @@ public class OrderController {
                 response.setOrderId(orderGoods.getId());
                 response.setOrderStatus(orderGoods.getOrderStatus());
                 response.setConsigneeAddress(orderGoods.getConsigneeAddress());
+                map.put(orderGoods.getId(), response);
             }
             OrderListResponse.OrderGoodsResponse orderGoodsResponse = new OrderListResponse().new OrderGoodsResponse();
             response.getOrderGoodsList().add(orderGoodsResponse);
@@ -130,9 +157,16 @@ public class OrderController {
             response.setTotalCount(goodsCount);
             BigDecimal totalPrice = response.getTotalPrice().add(orderGoods.getGoodsPrice());
             response.setTotalPrice(totalPrice);
-            responseLisr.add(response);
+
+            responseList.add(response);
         }
-        return CommonUtil.returnMsg(MsgConstant.OK, responseLisr);
+
+        if(cancelIds.size() > 0){
+            UpdateWrapper<Order> updateWrapper = new UpdateWrapper<>();
+            updateWrapper.in("id",cancelIds).set("order_status", 5);
+            orderService.update(updateWrapper);
+        }
+        return CommonUtil.returnMsg(MsgConstant.OK, responseList);
     }
 
     @ApiOperation(value = "获取订单列表（后台用）")
@@ -249,7 +283,7 @@ public class OrderController {
     @PostMapping("/addByShoppingCart")
     public BaseMsg addByShoppingCart(@RequestBody @Valid AddOrderByShoppingCartRequest request, BindingResult result, HttpSession session){
         if(result.hasErrors()){
-            log.error("参数错误！", result.getAllErrors().get(0).getDefaultMessage());
+            log.error("参数错误！"+ result.getAllErrors().get(0).getDefaultMessage());
             return CommonUtil.returnMsg(MsgConstant.PARAM_ERROR);
         }
         User user = CommonUtil.getUserBySession(session);
@@ -298,6 +332,7 @@ public class OrderController {
             if(!orderGoodsService.saveBatch(orderGoodsList)){
                 return CommonUtil.returnMsg(MsgConstant.SQL_ERROR, "订单商品保存失败！");
             }
+            shoppingCartService.removeByIds(request.getShoppingCartIds());
             return CommonUtil.returnMsg(MsgConstant.OK, id);
         }
     }
@@ -348,15 +383,31 @@ public class OrderController {
             if(1 != order.getOrderStatus()){
                 return CommonUtil.returnMsg(MsgConstant.ORDER_STATUS);
             }
+            if(StringUtils.isBlank(order.getPrepayId())){
 
-            List<OrderGoods> list = orderGoodsService.list(new QueryWrapper<OrderGoods>().eq("order_id", orderId));
-            BigDecimal totalFee = new BigDecimal(0);
-            for(OrderGoods orderGoods : list){
-                totalFee = totalFee.add(orderGoods.getGoodsPrice().multiply(new BigDecimal(orderGoods.getGoodsCount())));
+                List<OrderGoods> list = orderGoodsService.list(new QueryWrapper<OrderGoods>().eq("order_id", orderId));
+                BigDecimal totalFee = new BigDecimal(0);
+                for(OrderGoods orderGoods : list){
+                    totalFee = totalFee.add(orderGoods.getGoodsPrice().multiply(new BigDecimal(orderGoods.getGoodsCount())));
+                }
+                String totalFeeStr = totalFee.multiply(new BigDecimal(100)).intValue()+ "";
+                String prepayId = wechatApiUtil.placeOrder(orderId, totalFeeStr, user.getOpenid());
+                order.setPrepayId(prepayId);
+                UpdateWrapper<Order> updateWrapper = new UpdateWrapper<>();
+                updateWrapper.eq("id", order.getId());
+                updateWrapper.set("prepay_id", prepayId);
+                orderService.update(updateWrapper);
             }
-            String totalFeeStr = totalFee.multiply(new BigDecimal(100)).intValue()+ "";
-            PaymentParam paymentParam = wechatApiUtil.placeOrder(orderId, totalFeeStr, user.getOpenid());
 
+            long rand = RandomUtils.nextInt(100,999);
+            String nonce_str = DateFormatUtils.format(new Date(), "yyyyMMdd")+rand;
+            String timestamp = System.currentTimeMillis() / 1000 + "";
+            PaymentParam paymentParam = new PaymentParam();
+            paymentParam.setNonceStr(nonce_str);
+            paymentParam.setTimeStamp(timestamp);
+            paymentParam.setPackageParam("prepay_id="+order.getPrepayId());
+            String sign = wechatApiUtil.getSign(nonce_str, timestamp, order.getPrepayId());
+            paymentParam.setPaySign(sign);
             if(paymentParam == null){
                 return CommonUtil.returnMsg(MsgConstant.PAY_FAIL);
             }
@@ -396,7 +447,7 @@ public class OrderController {
         Integer orderId = Integer.valueOf(result.get("out_trade_no"));
         synchronized (orderId){
             Order order = orderService.getById(orderId);
-            if(order.getOrderStatus() != 1){
+            if(order == null || order.getOrderStatus() != 1){
                 return "<xml><return_code>FAIL</return_code></xml>";
             }
             UpdateWrapper<Order> updateWrapper = new UpdateWrapper<>();
