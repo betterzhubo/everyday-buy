@@ -39,6 +39,9 @@ public class ShopingCartGoods implements Serializable {
     @TableField("price")
     private BigDecimal price;
 
+    @TableField("goods_type_id")
+    private Integer goodsTypeId;
+
     /**
      * 展示图片
      */

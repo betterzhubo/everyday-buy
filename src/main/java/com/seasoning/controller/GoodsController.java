@@ -136,7 +136,15 @@ public class GoodsController {
     @PostMapping("/shopping-car/page")
     public BaseMsg<Page<ShopingCartGoods>>  getGoodsAndShopingCartPage(@RequestBody PageRequest request, HttpSession session){
         User user = CommonUtil.getUserBySession(session);
-        Page<ShopingCartGoods> page = goodsService.getGoodsAndShopingCartPage(new Page<>(request.getCurrent(), request.getPageSize()), user.getId());
+
+        QueryWrapper<ShopingCartGoods> queryWrapper = new QueryWrapper<>();
+        if(null != request.getGoodsTypeId()){
+            queryWrapper.eq("goods_type_id", request.getGoodsTypeId());
+        }
+        if(null != request.getPurpose()){
+            queryWrapper.eq("purpose", request.getPurpose());
+        }
+        Page<ShopingCartGoods> page = goodsService.getGoodsAndShopingCartPage(new Page<>(request.getCurrent(), request.getPageSize()), user.getId(), queryWrapper);
         return CommonUtil.returnMsg(MsgConstant.OK, page);
     }
 }

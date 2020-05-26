@@ -1,5 +1,6 @@
 package com.seasoning.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.seasoning.entity.Goods;
@@ -20,7 +21,7 @@ import org.springframework.stereotype.Service;
 public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements GoodsService {
 
     @Override
-    public Page<ShopingCartGoods> getGoodsAndShopingCartPage(Page<ShopingCartGoods> page, int userId) {
-        return page.setRecords(this.baseMapper.getGoodsPage(page, userId));
+    public Page<ShopingCartGoods> getGoodsAndShopingCartPage(Page<ShopingCartGoods> page, int userId, Wrapper wrapper) {
+        return page.setRecords(this.baseMapper.getGoodsPage(page, userId, wrapper));
     }
 }

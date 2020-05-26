@@ -97,7 +97,7 @@ public class ShoppingCartController {
     @PostMapping("/add")
     public BaseMsg add(@RequestBody @Valid AddShoppingCartRequest request, BindingResult result, HttpSession session){
         if(result.hasErrors()){
-            log.error("参数错误！", result.getAllErrors().get(0).getDefaultMessage());
+            log.error("参数错误！"+ result.getAllErrors().get(0).getDefaultMessage());
             return CommonUtil.returnMsg(MsgConstant.PARAM_ERROR);
         }
         User user = CommonUtil.getUserBySession(session);
