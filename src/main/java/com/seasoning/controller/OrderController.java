@@ -13,9 +13,7 @@ import com.seasoning.request.tem.PaymentParam;
 import com.seasoning.response.OrderListResponse;
 import com.seasoning.service.*;
 import com.seasoning.util.CommonUtil;
-import com.seasoning.util.MD5Util;
 import com.seasoning.util.WechatApiUtil;
-import com.sun.org.apache.xpath.internal.operations.Or;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -69,10 +67,14 @@ public class OrderController {
     @ApiOperation(value = "获取订单详情接口")
     @GetMapping("/detail/{id}")
     public BaseMsg<OrderListResponse> detail(@PathVariable Integer id, HttpSession session) {
-
+        User user = CommonUtil.getUserBySession(session);
+        if(user == null){
+            return CommonUtil.returnMsg(MsgConstant.NOT_LOGIN);
+        }
         OrderListResponse response = null;
         QueryWrapper<ViewOrderGoods> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("id", id);
+        queryWrapper.eq("user_id", user.getId());
         List<ViewOrderGoods> list = viewOrderGoodsService.list(queryWrapper);
         for(ViewOrderGoods orderGoods : list) {
             if (response == null) {
@@ -97,12 +99,29 @@ public class OrderController {
         }
 
         if(response != null && 1 == response.getOrderStatus()){
-            Duration duration = Duration.between(response.getCreateTime(), LocalDateTime.now());
-            if(duration.getSeconds() > 600){
-                UpdateWrapper<Order> updateWrapper = new UpdateWrapper<>();
-                updateWrapper.eq("id",id).set("order_status", 5);
-                orderService.update(updateWrapper);
-                response.setOrderStatus(5);
+
+            Order order = new Order();
+            order.setId(id);
+            if(StringUtils.isNotBlank(list.get(0).getPrepayId())){
+                String totalFeeStr = response.getTotalPrice().multiply(new BigDecimal(100)).intValue()+ "";
+                String tradeState = wechatApiUtil.queryOrder(id, totalFeeStr);
+                if(StringUtils.isNotBlank(tradeState)){
+                    order.setTradeState(tradeState);
+                }
+                if(StringUtils.equals("SUCCESS", tradeState)){
+                    order.setOrderStatus(2);
+                    response.setOrderStatus(2);
+                }
+            }
+            if(order.getOrderStatus() == null){
+                Duration duration = Duration.between(response.getCreateTime(), LocalDateTime.now());
+                if(duration.getSeconds() > 600){
+                    order.setOrderStatus(5);
+                    response.setOrderStatus(5);
+                }
+            }
+            if(order.getOrderStatus() != null || StringUtils.isNotBlank(order.getTradeState())){
+                orderService.updateById(order);
             }
         }
         return CommonUtil.returnMsg(MsgConstant.OK, response);
@@ -110,40 +129,40 @@ public class OrderController {
 
     @ApiOperation(value = "获取订单列表接口")
     @GetMapping("/list/{status}")
-    public BaseMsg<List<OrderListResponse>> list(@PathVariable Integer status, HttpSession session) {
-
-        QueryWrapper<ViewOrderGoods> queryWrapper = new QueryWrapper<>();
+    public BaseMsg<List<OrderListResponse>> list(@RequestBody OrderListRequest request, HttpSession session) {
 
         User user = CommonUtil.getUserBySession(session);
-        if(user != null){
-            queryWrapper.eq("user_id", user.getId());
+        if(user == null){
+            return CommonUtil.returnMsg(MsgConstant.NOT_LOGIN);
         }
+        QueryWrapper<Order> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("user_id", user.getId());
+        Integer status = request.getOrderStatus();
         if(null != status && -1 != status){
             queryWrapper.eq("order_status", status);
         }
         queryWrapper.orderByDesc("create_time");
 
-        List<ViewOrderGoods> list = viewOrderGoodsService.list(queryWrapper);
+        IPage<Order> orderPage = orderService.page(new Page<>(request.getCurrent(), request.getPageSize()), queryWrapper);
+        List<Integer> orderIds = new ArrayList<>();
+        for(Order order : orderPage.getRecords()){
+            orderIds.add(order.getId());
+        }
+
+        Collection<ViewOrderGoods> collection = viewOrderGoodsService.listByIds(orderIds);
 
         Map<Integer, OrderListResponse> map = new HashMap<>();
         List<OrderListResponse> responseList = new ArrayList();
-        List<Integer> cancelIds = new ArrayList<>();
-        for(ViewOrderGoods orderGoods : list){
 
-            Duration duration = Duration.between(orderGoods.getCreateTime(), LocalDateTime.now());
-            if(duration.getSeconds() > 600){
-                cancelIds.add(orderGoods.getId());
-                if(status == 1){
-                    continue;
-                }
-                orderGoods.setOrderStatus(5);
-            }
+        for(ViewOrderGoods orderGoods : collection){
+
             OrderListResponse response = map.get(orderGoods.getId());
             if(response == null){
                 response = new OrderListResponse();
                 response.setOrderGoodsList(new ArrayList<>());
                 response.setCreateTime(orderGoods.getCreateTime());
                 response.setOrderId(orderGoods.getId());
+                response.setPrepayId(orderGoods.getPrepayId());
                 response.setOrderStatus(orderGoods.getOrderStatus());
                 response.setConsigneeAddress(orderGoods.getConsigneeAddress());
                 map.put(orderGoods.getId(), response);
@@ -161,10 +180,42 @@ public class OrderController {
             responseList.add(response);
         }
 
-        if(cancelIds.size() > 0){
-            UpdateWrapper<Order> updateWrapper = new UpdateWrapper<>();
-            updateWrapper.in("id",cancelIds).set("order_status", 5);
-            orderService.update(updateWrapper);
+        List<Order> updateList = new ArrayList<>();
+        Iterator<OrderListResponse> iterator = responseList.iterator();
+        while(iterator.hasNext()){
+            OrderListResponse response = iterator.next();
+            if(response.getOrderStatus() != 1){
+                continue;
+            }
+            Order order = new Order();
+            order.setId(response.getOrderId());
+            if(StringUtils.isNotBlank(response.getPrepayId())){
+                String totalFeeStr = response.getTotalPrice().multiply(new BigDecimal(100)).intValue()+ "";
+                String tradeState = wechatApiUtil.queryOrder(response.getOrderId(), totalFeeStr);
+                if(StringUtils.isNotBlank(tradeState)){
+                    order.setTradeState(tradeState);
+                }
+                if(StringUtils.equals("SUCCESS", tradeState)){
+                    order.setOrderStatus(2);
+                }
+            }
+            if(order.getOrderStatus() == null){
+                Duration duration = Duration.between(response.getCreateTime(), LocalDateTime.now());
+                if(duration.getSeconds() > 600){
+                    order.setOrderStatus(5);
+                }
+            }
+
+            if (order.getOrderStatus() != null || StringUtils.isNotBlank(order.getTradeState())) {
+                updateList.add(order);
+            }
+            if(status == 1 && order.getOrderStatus() != null){
+                iterator.remove();
+            }
+        }
+
+        if(updateList.size() > 0){
+            orderService.updateBatchById(updateList);
         }
         return CommonUtil.returnMsg(MsgConstant.OK, responseList);
     }
@@ -437,10 +488,12 @@ public class OrderController {
         if(request == null){
             return "<xml><return_code>FAIL</return_code></xml>";
         }
-        if(StringUtils.equals(result.get("return_code"), "FAIL")){
+        if(!StringUtils.equals(result.get("return_code"), "SUCCESS")){
+            log.error(requestParam);
             return "<xml><return_code>FAIL</return_code></xml>";
         }
-        if(StringUtils.equals(result.get("result_code"), "FAIL")){
+        if(!StringUtils.equals(result.get("result_code"), "SUCCESS")){
+            log.error(requestParam);
             return "<xml><return_code>FAIL</return_code></xml>";
         }
 
@@ -448,12 +501,16 @@ public class OrderController {
         synchronized (orderId){
             Order order = orderService.getById(orderId);
             if(order == null || order.getOrderStatus() != 1){
+                log.error("订单状态错误："+requestParam);
                 return "<xml><return_code>FAIL</return_code></xml>";
             }
+
+            Integer totalFee = Integer.valueOf(result.get("total_fee"));
             UpdateWrapper<Order> updateWrapper = new UpdateWrapper<>();
             updateWrapper.eq("id", orderId);
             updateWrapper.set("order_status", 2);
             if(!orderService.update(updateWrapper)){
+                log.error("数据库操作错误："+requestParam);
                 return "<xml><return_code>FAIL</return_code></xml>";
             }
         }

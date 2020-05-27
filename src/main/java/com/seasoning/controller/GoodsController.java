@@ -136,6 +136,9 @@ public class GoodsController {
     @PostMapping("/shopping-car/page")
     public BaseMsg<Page<ShopingCartGoods>>  getGoodsAndShopingCartPage(@RequestBody PageRequest request, HttpSession session){
         User user = CommonUtil.getUserBySession(session);
+        if(user == null){
+            return CommonUtil.returnMsg(MsgConstant.NOT_LOGIN);
+        }
 
         QueryWrapper<ShopingCartGoods> queryWrapper = new QueryWrapper<>();
         if(null != request.getGoodsTypeId()){

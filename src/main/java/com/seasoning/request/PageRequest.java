@@ -9,15 +9,15 @@ import javax.validation.constraints.NotNull;
 @Data
 public class PageRequest {
 
-    @NotNull(message = "²ÎÊı²»ÄÜÎª¿Õ")
+    @NotNull(message = "å‚æ•°ä¸èƒ½ä¸ºç©º")
     private Integer current;
 
-    @NotNull(message = "²ÎÊı²»ÄÜÎª¿Õ")
+    @NotNull(message = "å‚æ•°ä¸èƒ½ä¸ºç©º")
     private Integer pageSize;
 
-    @Min(value = 1, message = "ÉÌÆ·ÀàĞÍ´íÎó")
+    @Min(value = 1, message = "å•†å“ç±»å‹é”™è¯¯")
     private Integer goodsTypeId;
 
-    @Range(min = 0, max = 1, message = "ÉÌÆ·ÓÃÍ¾´íÎó")
+    @Range(min = 0, max = 1, message = "å•†å“ç”¨é€”é”™è¯¯")
     private Integer purpose;
 }

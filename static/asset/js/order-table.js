@@ -2,7 +2,7 @@ $(function (){
 
 	var $wrapper = $('#div-table-container');
 	var $table = $('#table-order');
-	var statusMapper = {"1":"待支付", "2":"待配送", "3":"配送中", "4":"已完成", "5":"已取消"}
+	var statusMapper = {"1":"待支付", "2":"待配送", "3":"配送中", "4":"已完成", "5":"已取消", "6":"已退款"}
 	var _table = $table.dataTable($.extend(true,{},CONSTANT.DATA_TABLES.DEFAULT_OPTION, {
 		ajax : function(data, callback, settings) {//ajax配置为function,手动调用异步查询
 			//手动控制遮罩

@@ -1,6 +1,5 @@
 package com.seasoning.util;
 
-import com.seasoning.request.tem.PaymentParam;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -37,6 +36,8 @@ public class WechatApiUtil {
 
     private String PLACE_ORDER_URL = "https://api.mch.weixin.qq.com/pay/unifiedorder";
 
+    private String QUERY_ORDER_URL = "https://api.mch.weixin.qq.com/pay/orderquery";
+
     @PostConstruct
     public void init() throws UnknownHostException {
         this.ipAddr = InetAddress.getLocalHost().getHostAddress();//获得本机IP
@@ -60,11 +61,11 @@ public class WechatApiUtil {
         }
         Map<String, String> map = CommonUtil.getXmlBodyContext(result);
 
-        if (StringUtils.equals(map.get("return_code"), "FAIL")) {
+        if (!StringUtils.equals(map.get("return_code"), "SUCCESS")) {
             log.error(result);
             return null;
         }
-        if (StringUtils.equals(map.get("result_code"), "FAIL")) {
+        if (!StringUtils.equals(map.get("result_code"), "SUCCESS")) {
             log.error(result);
             return null;
         }
@@ -123,4 +124,58 @@ public class WechatApiUtil {
         log.info("调试模式_统一下单接口 请求XML数据：" + xml);
         return xml;
     }
+
+
+    public String queryOrder(Integer orderId, String totalFee) {
+
+        String result = HttpUtil.postXML(QUERY_ORDER_URL, paramXml(orderId));
+        if (result == null) {
+            return null;
+        }
+        Map<String, String> map = CommonUtil.getXmlBodyContext(result);
+
+        if (!StringUtils.equals(map.get("return_code"), "SUCCESS")) {
+            log.error(result);
+            return null;
+        }
+        if (!StringUtils.equals(map.get("result_code"), "SUCCESS")) {
+            log.error(result);
+            return null;
+        }
+        String tradeState = map.get("trade_state");
+        if (!StringUtils.equals(tradeState, "SUCCESS")) {
+            log.error(result);
+            return tradeState;
+        }
+        if(!StringUtils.equals(totalFee, map.get("total_fee"))){
+            log.error(result);
+            return null;
+        }
+        if(!StringUtils.equals(orderId+"", map.get("out_trade_no"))){
+            log.error("订单号错误:{},{}", orderId, result);
+            return null;
+        }
+        return tradeState;
+    }
+
+    private String paramXml(Integer orderId){
+        //生成的随机字符串
+        long rand = RandomUtils.nextInt(100,999);
+        String nonce_str = DateFormatUtils.format(new Date(), "yyyyMMdd")+rand;
+        String signSource="appid="+appId+"&mch_id="+mchId+"&nonce_str="+nonce_str
+                +"&out_trade_no="+orderId+"&key="+appSecret;
+        System.out.println(signSource);
+        String sign = MD5Util.EncryptionStr32(signSource).toUpperCase();
+        //支付金额，单位：分，这边需要转成字符串类型，否则后面的签名会失败,（xml拼接字段依据自己公司需求而定）
+        String xml = "<xml>"
+                + "<appid>" + appId + "</appid>"
+                + "<mch_id>" + mchId + "</mch_id>"
+                + "<nonce_str>" + nonce_str + "</nonce_str>"
+                + "<out_trade_no>" + orderId + "</out_trade_no>"
+                + "<sign>" + sign + "</sign>"
+                + "</xml>";
+        log.info("查询订单接口 请求XML数据：" + xml);
+        return xml;
+    }
+
 }

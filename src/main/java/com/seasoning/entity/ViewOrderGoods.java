@@ -1,13 +1,14 @@
 package com.seasoning.entity;
 
-import java.math.BigDecimal;
-import com.baomidou.mybatisplus.annotation.TableName;
-import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.TableField;
-import java.io.Serializable;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 /**
  * <p>
@@ -30,6 +31,9 @@ public class ViewOrderGoods implements Serializable {
 
     @TableField("user_id")
     private Integer userId;
+
+    @TableField("prepay_id")
+    private String prepayId;
 
     @TableField("consignee_name")
     private String consigneeName;
