@@ -10,9 +10,12 @@ import javax.validation.constraints.NotBlank;
 @Data
 @ApiModel
 public class UpdateShippingAddressRequest {
-
-    @ApiModelProperty(value = "收货信息唯一id")
+	
+	@ApiModelProperty(value = "收货信息唯一id")
     private int id;
+	
+	@ApiModelProperty(value = "收货地区id")
+    private Integer areaId;
 
     @ApiModelProperty(value = "收货人地区")
     private String consigneeArea;

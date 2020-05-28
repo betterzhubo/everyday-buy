@@ -57,6 +57,29 @@ public class RegionController {
         responseBaseModelT.setData(regionTree);
         return responseBaseModelT;
     }
+	
+	@ApiOperation(value = "获取地址树(沈阳市一级： 区)")
+    @GetMapping("/api/getRegionTreeSYLevel")
+    public ResponseBaseModelT<CityTree> getRegionTreeSYLevel() {
+        QueryWrapper<Region> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("parentid", 467);
+        List<Region> regionList = regionService.list(queryWrapper);
+        CityTree cityTree = new CityTree();
+        cityTree.setCityid(466);
+        cityTree.setCityname("沈阳市");
+        cityTree.setLevel(2);
+        cityTree.setAreaTreeList(new ArrayList<>());
+        for(Region region : regionList){
+            AreaTree areaTree = new AreaTree();
+            areaTree.setAreaid(region.getAreaid());
+            areaTree.setAreaname(region.getAreaname());
+            areaTree.setLevel(region.getLevel());
+            cityTree.getAreaTreeList().add(areaTree);
+        }
+        ResponseBaseModelT<CityTree> responseBaseModelT = new ResponseBaseModelT<>();
+        responseBaseModelT.setData(cityTree);
+        return responseBaseModelT;
+    }
 
 }
 

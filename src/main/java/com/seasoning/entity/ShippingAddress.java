@@ -31,6 +31,12 @@ public class ShippingAddress implements Serializable {
 
     @TableField("user_id")
     private Integer userId;
+	
+	/**
+     * 地区id
+     */
+    @TableField("area_id")
+    private Integer areaId;
 
     /**
      * 收货人地区

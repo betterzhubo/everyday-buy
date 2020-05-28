@@ -6,6 +6,7 @@
     <resultMap id="BaseResultMap" type="com.seasoning.entity.ShippingAddress">
         <id column="id" property="id" />
         <result column="user_id" property="userId" />
+        <result column="area_id" property="areaId" />
         <result column="consignee_area" property="consigneeArea" />
         <result column="consignee_address" property="consigneeAddress" />
         <result column="consignee_name" property="consigneeName" />
@@ -16,7 +17,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, user_id, consignee_area, consignee_address, consignee_name, consignee_mobile, update_time, create_time
+        id, user_id, area_id, consignee_area, consignee_address, consignee_name, consignee_mobile, update_time, create_time
     </sql>
 
 </mapper>
