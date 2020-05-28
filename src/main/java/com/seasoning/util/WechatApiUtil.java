@@ -8,8 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
+import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -39,8 +38,8 @@ public class WechatApiUtil {
     private String QUERY_ORDER_URL = "https://api.mch.weixin.qq.com/pay/orderquery";
 
     @PostConstruct
-    public void init() throws UnknownHostException {
-        this.ipAddr = InetAddress.getLocalHost().getHostAddress();//获得本机IP
+    public void init() throws IOException {
+        this.ipAddr = HttpUtil.get("http://ident.me/").trim();//获得本机IP
     }
 
     public String code2Session(String code){
