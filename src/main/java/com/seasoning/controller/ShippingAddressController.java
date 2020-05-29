@@ -105,5 +105,23 @@ public class ShippingAddressController {
         wrapper.eq("id", id);
         return CommonUtil.returnMsg(MsgConstant.OK, shippingAddressService.remove(wrapper));
     }
+	
+	@ApiOperation(value = "获取默认配送地址信息")
+    @GetMapping("/default")
+    public BaseMsg<ShippingAddress> getDefault(HttpSession session){
+        User user = CommonUtil.getUserBySession(session);
+
+        QueryWrapper<ShippingAddress> wrapper = new QueryWrapper<>();
+        wrapper.eq("user_id", user.getId());
+        wrapper.eq("is_default", 1);
+        ShippingAddress shippingAddress = shippingAddressService.getOne(wrapper, false);
+        if(shippingAddress == null){
+            wrapper = new QueryWrapper<>();
+            wrapper.eq("user_id", user.getId());
+            wrapper.orderByAsc("create_time");
+            shippingAddress = shippingAddressService.getOne(wrapper, false);
+        }
+        return CommonUtil.returnMsg(MsgConstant.OK, shippingAddress);
+    }
 
 }
