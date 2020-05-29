@@ -147,6 +147,9 @@ public class GoodsController {
         if(null != request.getPurpose()){
             queryWrapper.eq("purpose", request.getPurpose());
         }
+        if(StringUtils.isNotBlank(request.getGoodsName())){
+            queryWrapper.like("goods_name", request.getGoodsName());
+        }
         Page<ShopingCartGoods> page = goodsService.getGoodsAndShopingCartPage(new Page<>(request.getCurrent(), request.getPageSize()), user.getId(), queryWrapper);
         return CommonUtil.returnMsg(MsgConstant.OK, page);
     }

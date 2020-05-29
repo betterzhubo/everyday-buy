@@ -15,6 +15,8 @@ public class PageRequest {
     @NotNull(message = "参数不能为空")
     private Integer pageSize;
 
+    private String goodsName;
+
     @Min(value = 1, message = "商品类型错误")
     private Integer goodsTypeId;
 

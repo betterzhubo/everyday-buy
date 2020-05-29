@@ -128,7 +128,7 @@ public class OrderController {
     }
 
     @ApiOperation(value = "获取订单列表接口")
-    @GetMapping("/list/{status}")
+    @PostMapping("/list")
     public BaseMsg<List<OrderListResponse>> list(@RequestBody OrderListRequest request, HttpSession session) {
 
         User user = CommonUtil.getUserBySession(session);
@@ -149,10 +149,13 @@ public class OrderController {
             orderIds.add(order.getId());
         }
 
+        List<OrderListResponse> responseList = new ArrayList();
+        if(orderIds.size() == 0){
+            return CommonUtil.returnMsg(MsgConstant.OK, responseList);
+        }
         Collection<ViewOrderGoods> collection = viewOrderGoodsService.listByIds(orderIds);
 
         Map<Integer, OrderListResponse> map = new HashMap<>();
-        List<OrderListResponse> responseList = new ArrayList();
 
         for(ViewOrderGoods orderGoods : collection){
 
@@ -259,11 +262,16 @@ public class OrderController {
         UpdateWrapper<Order> updateWrapper = new UpdateWrapper<>();
         updateWrapper.eq("id", request.getId());
         User user = CommonUtil.getUserBySession(session);
-        if(user != null){
-            updateWrapper.eq("user_id", user.getId());
+        Integer userId = null;
+        if(user == null){
+            Order order = orderService.getById(request.getId());
+            userId = order.getUserId();
+        }else{
+            userId = user.getId();
         }
+        updateWrapper.eq("user_id", userId);
 
-        synchronized (user){
+        synchronized (userId){
             if(request.getConsigneeName() != null){
                 updateWrapper.set("consignee_name", request.getConsigneeName());
             }

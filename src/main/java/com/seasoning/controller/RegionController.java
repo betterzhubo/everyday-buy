@@ -1,7 +1,10 @@
 package com.seasoning.controller;
 
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.seasoning.base.ResponseBaseModelT;
+import com.seasoning.entity.Region;
+import com.seasoning.request.tem.AreaTree;
 import com.seasoning.request.tem.CityTree;
 import com.seasoning.request.tem.ProvinceTree;
 import com.seasoning.request.tem.ProvinceTreeUnify;
@@ -13,6 +16,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**

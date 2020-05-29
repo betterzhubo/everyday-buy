@@ -71,6 +71,18 @@ public class ShippingAddressController {
         if(StringUtils.isNotEmpty(request.getConsigneeArea())){
             updateWrapper.set("consignee_area", request.getConsigneeArea());
         }
+        if(request.getIsDefault() != null){
+            if(request.getIsDefault()){
+                UpdateWrapper<ShippingAddress> updateDefault = new UpdateWrapper<>();
+                updateDefault.eq("user_id", user.getId());
+                updateDefault.eq("is_default", 1);
+                updateDefault.set("is_default", 0);
+                shippingAddressService.update(updateDefault);
+            }
+            updateWrapper.set("is_default", 1);
+        }
+
+        shippingAddressService.update(updateWrapper);
         return CommonUtil.returnMsg(MsgConstant.OK);
     }
 
@@ -86,10 +98,16 @@ public class ShippingAddressController {
         ShippingAddress shippingAddress = new ShippingAddress();
         BeanUtils.copyProperties(request, shippingAddress);
         shippingAddress.setUserId(user.getId());
-        if(shippingAddressService.save(shippingAddress)){
-            return CommonUtil.returnMsg(MsgConstant.OK);
+        shippingAddress.setIsDefault(request.getIsDefault() != null && request.getIsDefault()? 1 : 0);
+        UpdateWrapper<ShippingAddress> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("user_id", user.getId());
+        updateWrapper.eq("is_default", 1);
+        updateWrapper.set("is_default", 0);
+        shippingAddressService.update(updateWrapper);
+        if(!shippingAddressService.save(shippingAddress)){
+            return CommonUtil.returnMsg(MsgConstant.SQL_ERROR);
         }
-        return CommonUtil.returnMsg(MsgConstant.SQL_ERROR);
+        return CommonUtil.returnMsg(MsgConstant.OK);
     }
 
     @ApiOperation(value = "删除配送地址信息")

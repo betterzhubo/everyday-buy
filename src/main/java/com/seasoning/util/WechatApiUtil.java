@@ -38,8 +38,12 @@ public class WechatApiUtil {
     private String QUERY_ORDER_URL = "https://api.mch.weixin.qq.com/pay/orderquery";
 
     @PostConstruct
-    public void init() throws IOException {
-        this.ipAddr = HttpUtil.get("http://ident.me/").trim();//获得本机IP
+    public void init() {
+        try{
+            this.ipAddr = HttpUtil.get("http://ident.me/").trim();//获得本机IP
+        }catch (IOException e){
+            this.ipAddr = "127.0.0.1";
+        }
     }
 
     public String code2Session(String code){

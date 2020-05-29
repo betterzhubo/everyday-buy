@@ -11,13 +11,14 @@
         <result column="consignee_address" property="consigneeAddress" />
         <result column="consignee_name" property="consigneeName" />
         <result column="consignee_mobile" property="consigneeMobile" />
+        <result column="is_default" property="isDefault" />
         <result column="update_time" property="updateTime" />
         <result column="create_time" property="createTime" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, user_id, area_id, consignee_area, consignee_address, consignee_name, consignee_mobile, update_time, create_time
+        id, user_id, area_id, consignee_area, consignee_address, consignee_name, consignee_mobile, is_default, update_time, create_time
     </sql>
 
 </mapper>

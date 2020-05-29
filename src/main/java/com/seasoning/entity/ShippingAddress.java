@@ -62,6 +62,12 @@ public class ShippingAddress implements Serializable {
     @TableField("consignee_mobile")
     private String consigneeMobile;
 
+    /**
+     * 是否默认地址 1为默认0普通
+     */
+    @TableField("is_default")
+    private Integer isDefault;
+
     @TableField("update_time")
     private LocalDateTime updateTime;
 
