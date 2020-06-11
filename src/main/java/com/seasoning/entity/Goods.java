@@ -56,6 +56,11 @@ public class Goods implements Serializable {
      */
     @TableField("selling")
     private Boolean selling;
+    /**
+     * 是否热卖中
+     */
+    @TableField("is_hot")
+    private Boolean isHot;
 
 
 }

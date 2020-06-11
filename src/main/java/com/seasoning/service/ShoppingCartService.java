@@ -16,4 +16,6 @@ import com.seasoning.entity.ShoppingCart;
 public interface ShoppingCartService extends IService<ShoppingCart> {
 
     Page<ShopingCartGoods> getListByUserId(Page<ShopingCartGoods> page, int userId);
+
+    Integer getSumByUserId(int userId);
 }

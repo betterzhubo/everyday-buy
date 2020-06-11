@@ -25,4 +25,8 @@ public class ShoppingCartServiceImpl extends ServiceImpl<ShoppingCartMapper, Sho
     public Page<ShopingCartGoods> getListByUserId(Page<ShopingCartGoods> page, int userId){
         return page.setRecords(this.baseMapper.getListByUserId(page, userId));
     }
+    @Override
+    public Integer getSumByUserId(int userId){
+        return this.baseMapper.getSumByUserId(userId);
+    }
 }

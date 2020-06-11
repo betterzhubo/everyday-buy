@@ -142,4 +142,32 @@ public class CommonUtil {
 		return dataMap;
 	}
 
+
+	public static void main(String[] args) {
+		String a = "<xml><return_code><![CDATA[SUCCESS]]></return_code>\n" +
+				"<return_msg><![CDATA[OK]]></return_msg>\n" +
+				"<appid><![CDATA[wx5b0d3b802f7b88c7]]></appid>\n" +
+				"<mch_id><![CDATA[1588230011]]></mch_id>\n" +
+				"<nonce_str><![CDATA[Z7ITKE11xwEbAvUu]]></nonce_str>\n" +
+				"<sign><![CDATA[FE6EE8E9F1E5BF76BB51D5291F6D4CC6]]></sign>\n" +
+				"<result_code><![CDATA[SUCCESS]]></result_code>\n" +
+				"<openid><![CDATA[oPTNP5V75BjLuaSVd7dCw6no7H0o]]></openid>\n" +
+				"<is_subscribe><![CDATA[N]]></is_subscribe>\n" +
+				"<trade_type><![CDATA[JSAPI]]></trade_type>\n" +
+				"<bank_type><![CDATA[OTHERS]]></bank_type>\n" +
+				"<total_fee>2</total_fee>\n" +
+				"<fee_type><![CDATA[CNY]]></fee_type>\n" +
+				"<transaction_id><![CDATA[4200000615202006078441769653]]></transaction_id>\n" +
+				"<out_trade_no><![CDATA[9ba2e91ecd884b378e9506911725a867]]></out_trade_no>\n" +
+				"<attach><![CDATA[]]></attach>\n" +
+				"<time_end><![CDATA[20200607194810]]></time_end>\n" +
+				"<trade_state><![CDATA[SUCCESS]]></trade_state>\n" +
+				"<cash_fee>2</cash_fee>\n" +
+				"<trade_state_desc><![CDATA[支付成功]]></trade_state_desc>\n" +
+				"<cash_fee_type><![CDATA[CNY]]></cash_fee_type>\n" +
+				"</xml>";
+
+		Map<String, String> m = getXmlBodyContext(a);
+		System.out.println(JSONObject.toJSONString(m));
+	}
 }

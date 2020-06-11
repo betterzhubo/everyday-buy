@@ -9,5 +9,5 @@ import lombok.Data;
 public class PayOrderRequest {
 
     @ApiModelProperty(value = "订单唯一id")
-    private Integer orderId;
+    private String orderId;
 }

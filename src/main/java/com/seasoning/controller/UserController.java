@@ -4,6 +4,7 @@ package com.seasoning.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.seasoning.base.BaseMsg;
 import com.seasoning.base.CommonConstant;
 import com.seasoning.base.MsgConstant;
@@ -78,6 +79,13 @@ public class UserController {
             user.setPhone("");
             user.setOpenid(openid);
             userService.save(user);
+        }else{
+            if(!StringUtils.equals(user.getName(), request.getName())){
+                UpdateWrapper<User> updateWrapper = new UpdateWrapper<>();
+                updateWrapper.eq("openid", openid);
+                updateWrapper.set("name", request.getName());
+                userService.update(updateWrapper);
+            }
         }
         session.setAttribute(CommonConstant.USER_INFO, user);
 

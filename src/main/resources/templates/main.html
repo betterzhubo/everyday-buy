@@ -82,7 +82,7 @@
           <div class="right-menu list-inline no-margin-bottom">    
             <!-- Log out               -->
             <div class="list-inline-item logout">
-                <a id="logout" href="login.html" class="nav-link">
+                <a id="logout" href="index" class="nav-link">
                     <span class="d-none d-sm-inline">退出 </span>
                     <i class="icon-logout"></i>
                 </a>
@@ -99,23 +99,25 @@
           <li class="active"><a target="grid" href="goods-table" > <i class="icon-grid"></i>商品 </a></li>
           <li><a target="grid" href="goods-type"> <i class="fa fa-bar-chart"></i>商品类型 </a></li>
           <li><a target="grid" href="order"> <i class="icon-grid"></i>订单 </a></li>
+          <li><a target="grid" href="banner"> <i class="icon-grid"></i>轮播图</a></li>
 
         </ul>
       </nav>
       <!-- Sidebar Navigation end-->
       <div class="page-content">
         <!-- Page Header-->
-        <div class="page-header no-margin-bottom">
-          <div class="container-fluid">
-            <h2 class="h5 no-margin-bottom">商品</h2>
-          </div>
-        </div>
+        <!--<div class="page-header no-margin-bottom">-->
+          <!--<div class="container-fluid">-->
+            <!--<h2 class="h5 no-margin-bottom">商品</h2>-->
+          <!--</div>-->
+        <!--</div>-->
         <section class="no-padding-top">
             <iframe name="grid" src="goods-table" width="100%" height="1000px">
 
             </iframe>
         </section>
         <footer class="footer">
+          <!--<button id="fasheng">点我试试</button>-->
           <div class="footer__block block no-margin-bottom">
             <div class="container-fluid text-center">
               <!-- Please do not remove the backlink to us unless you support us at https://bootstrapious.com/donate. It is part of the license conditions. Thank you for understanding :)-->
@@ -137,6 +139,15 @@
     <script>
         $("#sidebar li").click(function(){
             $(this).addClass("active").siblings().removeClass("active");
+        })
+        function fasheng(str) {
+          var url = "http://tts.baidu.com/text2audio?lan=zh&ie=UTF-8&text=" + encodeURI(str);
+          var n = new Audio(url);
+          n.src = url;
+          n.play();
+        }
+        $("#fasheng").click(function() {
+          fasheng("你好,请输入你想要的语音提示即可让页面发出声音");
         })
 
     </script>

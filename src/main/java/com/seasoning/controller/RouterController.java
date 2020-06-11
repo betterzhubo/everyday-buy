@@ -66,4 +66,10 @@ public class RouterController {
         model.addAttribute("userList", userService.list());
         return "order";
     }
+
+    @GetMapping("/banner")
+    public String bannerTable(Model model){
+        model.addAttribute("userList", userService.list());
+        return "banner";
+    }
 }

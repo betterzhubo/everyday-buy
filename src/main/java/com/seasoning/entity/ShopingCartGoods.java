@@ -53,4 +53,10 @@ public class ShopingCartGoods implements Serializable {
      */
     @TableField("selling")
     private Boolean selling;
+
+    /**
+     * 是否销售中
+     */
+    @TableField("is_hot")
+    private Boolean isHot;
 }

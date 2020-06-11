@@ -27,7 +27,7 @@ public class ViewOrderGoods implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @TableField("id")
-    private Integer id;
+    private String id;
 
     @TableField("user_id")
     private Integer userId;

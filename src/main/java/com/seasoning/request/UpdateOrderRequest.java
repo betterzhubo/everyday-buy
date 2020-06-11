@@ -17,7 +17,7 @@ import lombok.Data;
 public class UpdateOrderRequest {
 
     @ApiModelProperty(value = "订单唯一id")
-    private Integer id;
+    private String id;
 
     @ApiModelProperty(value = "收货人姓名")
     private String consigneeName;

@@ -46,7 +46,7 @@ $(function (){
         columns: [
             {
             	data: "id",
-				width : "150px"
+				width : "260px"
             },
 			{
             	data: "userId",

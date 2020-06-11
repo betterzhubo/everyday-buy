@@ -10,7 +10,7 @@ import com.seasoning.entity.ShopingCartGoods;
 import com.seasoning.entity.ShoppingCart;
 import com.seasoning.entity.User;
 import com.seasoning.request.AddShoppingCartRequest;
-import com.seasoning.request.PageRequest;
+import com.seasoning.request.GoodsPageRequest;
 import com.seasoning.service.ShoppingCartService;
 import com.seasoning.util.CommonUtil;
 import io.swagger.annotations.Api;
@@ -46,7 +46,7 @@ public class ShoppingCartController {
 
     @ApiOperation(value = "根据用户id获取购物车内商品信息")
     @PostMapping("/list")
-    public BaseMsg<Page<ShopingCartGoods>> list(@RequestBody PageRequest request, HttpSession session){
+    public BaseMsg<Page<ShopingCartGoods>> list(@RequestBody GoodsPageRequest request, HttpSession session){
         User user = CommonUtil.getUserBySession(session);
         Page<ShopingCartGoods> list = shoppingCartService.getListByUserId(new Page<>(request.getCurrent(), request.getPageSize()), user.getId());
         return CommonUtil.returnMsg(MsgConstant.OK, list);
@@ -54,7 +54,7 @@ public class ShoppingCartController {
 
     @ApiOperation(value = "根据唯一id删除购物车内商品")
     @DeleteMapping("/delete/{id}")
-    public BaseMsg delete(@PathVariable int id, HttpSession session){
+    public BaseMsg delete(@PathVariable Integer id, HttpSession session){
         if(id <= 0){
             return CommonUtil.returnMsg(MsgConstant.PARAM_ERROR);
         }
@@ -69,7 +69,7 @@ public class ShoppingCartController {
 
     @ApiOperation(value = "根据唯一id减去或增加购物车内商品(减少时当商品数为1时做删除操作)")
     @GetMapping("/decrease/{id}/{operate}")
-    public BaseMsg decrease(@PathVariable int id, @PathVariable @ApiParam(value = "操作1:增加，-1:减少(只允许这两个值)") int operate, HttpSession session){
+    public BaseMsg decrease(@PathVariable Integer id, @PathVariable @ApiParam(value = "操作1:增加，-1:减少(只允许这两个值)") int operate, HttpSession session){
         if(id <= 0){
             return CommonUtil.returnMsg(MsgConstant.PARAM_ERROR);
         }
@@ -126,18 +126,12 @@ public class ShoppingCartController {
     @GetMapping("/sum")
     public BaseMsg sum(HttpSession session){
 
-        QueryWrapper<ShoppingCart> wrapper = new QueryWrapper<>();
         User user = CommonUtil.getUserBySession(session);
-        wrapper.eq("user_id", user.getId());
-//        wrapper.eq("user_id", 1);
-        wrapper.select("sum(goods_count) total");
-        wrapper.groupBy("user_id");
-        Map<String, Object> map = shoppingCartService.getMap(wrapper);
-        if(map == null || null == map.get("total")){
+        Integer sum = shoppingCartService.getSumByUserId(user.getId());
+        if(sum == null){
             return CommonUtil.returnMsg(MsgConstant.OK, 0);
         }
-        BigDecimal bd = (BigDecimal) map.get("total");
-        return CommonUtil.returnMsg(MsgConstant.OK, bd.intValue());
+        return CommonUtil.returnMsg(MsgConstant.OK, sum);
     }
 }
 

@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.util.Calendar;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -44,16 +46,18 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         DATA_PREFIX = new AtomicInteger(0);
     }
 
-    @PostConstruct
+//    @PostConstruct
     public void init(){
-        int lastOrderId = baseMapper.findLastId();
-        Calendar cal = Calendar.getInstance();
-        int day = cal.get(Calendar.DAY_OF_MONTH);
-        int month = cal.get(Calendar.MONTH) + 1;
-        NOW_YEAR = cal.get(Calendar.YEAR)%2000;
-        NOW_DAY = (month << 5) | day;
-        if(NOW_DAY == (lastOrderId & 0x1ff)){
-            DATA_PREFIX.set((lastOrderId >> 9) & 0x3fff);
-        }
+//        int lastOrderId = baseMapper.findLastId();
+//        Calendar cal = Calendar.getInstance();
+//        int day = cal.get(Calendar.DAY_OF_MONTH);
+//        int month = cal.get(Calendar.MONTH) + 1;
+//        NOW_YEAR = cal.get(Calendar.YEAR)%2000;
+//        NOW_DAY = (month << 5) | day;
+//        if(NOW_DAY == (lastOrderId & 0x1ff)){
+//            DATA_PREFIX.set((lastOrderId >> 9) & 0x3fff);
+//        }
     }
+
+
 }

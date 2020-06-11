@@ -3,6 +3,9 @@ package com.seasoning.service;
 import com.seasoning.entity.Order;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * <p>
  *  服务类
@@ -16,4 +19,5 @@ public interface OrderService extends IService<Order> {
     int generateOrderId();
 
     void updateDay();
+
 }

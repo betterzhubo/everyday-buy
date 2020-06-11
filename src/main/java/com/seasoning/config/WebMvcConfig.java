@@ -37,6 +37,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         List<String> excludeList = new ArrayList<>();
 		excludeList.add("/");
+        excludeList.add("/error");
         excludeList.add("/index");
         excludeList.add("/user/login");
 		excludeList.add("/order/notice");

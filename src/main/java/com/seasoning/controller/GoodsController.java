@@ -11,8 +11,9 @@ import com.seasoning.entity.Goods;
 import com.seasoning.entity.ShopingCartGoods;
 import com.seasoning.entity.User;
 import com.seasoning.request.GoodsAddRequest;
+import com.seasoning.request.GoodsPageRequest;
 import com.seasoning.request.GoodsSearchRequest;
-import com.seasoning.request.PageRequest;
+import com.seasoning.request.HotPageRequest;
 import com.seasoning.service.GoodsService;
 import com.seasoning.util.CommonUtil;
 import io.swagger.annotations.Api;
@@ -73,7 +74,9 @@ public class GoodsController {
         if(goods.getSelling() != null){
             updateWrapper.set("selling", goods.getSelling());
         }
-
+        if(goods.getIsHot() != null){
+            updateWrapper.set("is_hot", goods.getIsHot());
+        }
         if(goods.getPrice() != null){
             updateWrapper.set("price", goods.getPrice());
         }
@@ -118,6 +121,9 @@ public class GoodsController {
         if(request.getSelling() != null){
             queryWrapper.eq("selling", request.getSelling());
         }
+        if(request.getIsHot() != null){
+            queryWrapper.eq("is_hot", request.getIsHot());
+        }
 
         Page<Goods> page = new Page<>(request.getCurrent()+1, request.getPageSize());
 
@@ -134,19 +140,38 @@ public class GoodsController {
 
     @ApiOperation(value = "根据商品id获取商品信息包含购物车内数量（带分页）")
     @PostMapping("/shopping-car/page")
-    public BaseMsg<Page<ShopingCartGoods>>  getGoodsAndShopingCartPage(@RequestBody PageRequest request, HttpSession session){
+    public BaseMsg<Page<ShopingCartGoods>>  getGoodsAndShopingCartPage(@RequestBody GoodsPageRequest request, HttpSession session){
         User user = CommonUtil.getUserBySession(session);
         if(user == null){
             return CommonUtil.returnMsg(MsgConstant.NOT_LOGIN);
         }
 
         QueryWrapper<ShopingCartGoods> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("selling", 1);
         if(null != request.getGoodsTypeId()){
             queryWrapper.eq("goods_type_id", request.getGoodsTypeId());
         }
         if(null != request.getPurpose()){
             queryWrapper.eq("purpose", request.getPurpose());
         }
+        if(StringUtils.isNotBlank(request.getGoodsName())){
+            queryWrapper.like("goods_name", request.getGoodsName());
+        }
+        Page<ShopingCartGoods> page = goodsService.getGoodsAndShopingCartPage(new Page<>(request.getCurrent(), request.getPageSize()), user.getId(), queryWrapper);
+        return CommonUtil.returnMsg(MsgConstant.OK, page);
+    }
+
+    @ApiOperation(value = "根据商品id获取商品信息包含购物车内数量（带分页）")
+    @PostMapping("/hot-goods/page")
+    public BaseMsg<Page<ShopingCartGoods>>  getHotGoodsAndShopingCartPage(@RequestBody HotPageRequest request, HttpSession session){
+        User user = CommonUtil.getUserBySession(session);
+        if(user == null){
+            return CommonUtil.returnMsg(MsgConstant.NOT_LOGIN);
+        }
+
+        QueryWrapper<ShopingCartGoods> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("is_hot", 1);
+
         if(StringUtils.isNotBlank(request.getGoodsName())){
             queryWrapper.like("goods_name", request.getGoodsName());
         }

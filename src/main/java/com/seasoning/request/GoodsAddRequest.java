@@ -42,4 +42,7 @@ public class GoodsAddRequest {
 
     @ApiModelProperty(value = "是否销售中")
     private Boolean selling;
+
+    @ApiModelProperty(value = "是否热卖中")
+    private Boolean isHot;
 }

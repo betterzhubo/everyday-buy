@@ -7,7 +7,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 @Data
-public class PageRequest {
+public class GoodsPageRequest {
 
     @NotNull(message = "参数不能为空")
     private Integer current;

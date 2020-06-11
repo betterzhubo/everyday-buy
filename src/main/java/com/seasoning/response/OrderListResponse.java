@@ -14,7 +14,7 @@ import java.util.List;
 public class OrderListResponse {
 
     @ApiModelProperty(value = "订单号")
-    private Integer orderId;
+    private String orderId;
     @ApiModelProperty(value = "订单状态")
     private Integer orderStatus;
     @ApiModelProperty(value = "商品总数")
@@ -26,7 +26,7 @@ public class OrderListResponse {
     @ApiModelProperty(value = "商品总价")
     private BigDecimal totalPrice = new BigDecimal(0);
     @ApiModelProperty(value = "下单时间")
-    private LocalDateTime createTime;
+    private String createTime;
     @ApiModelProperty(value = "订单商品")
     private List<OrderGoodsResponse> orderGoodsList;
 

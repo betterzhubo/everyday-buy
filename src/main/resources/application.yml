@@ -9,9 +9,11 @@ spring:
     name: everyday_source
     type: com.alibaba.druid.pool.DruidDataSource
     druid:
-      url: jdbc:mysql://127.0.0.1:3306/everyday_buy?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=GMT%2B8
+#      url: jdbc:mysql://127.0.0.1:3306/everyday_buy?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=GMT%2B8
+      url: jdbc:mysql://49.232.33.97:3306/everyday_buy?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=GMT%2B8
       username: root
-      password: password
+#      password: password
+      password: kWfhYw@g
       filters: stat
       driver-class-name: com.mysql.cj.jdbc.Driver
       initial-size: 1
@@ -66,4 +68,4 @@ wechat:
   mchId: 1588230011
   notifyUrl: http://chengtianmai.cn/order/notice
 everyday-buy:
-  resources-path: F:/static/
+  resources-path: D:/develop/code/everyday-buy/static/

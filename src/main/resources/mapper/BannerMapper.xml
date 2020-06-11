@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seasoning.mapper.BannerMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.seasoning.entity.Banner">
+        <id column="id" property="id" />
+        <result column="banner_name" property="bannerName" />
+        <result column="sort" property="sort" />
+        <result column="is_show" property="isShow" />
+        <result column="image_url" property="imageUrl" />
+        <result column="page_url" property="pageUrl" />
+        <result column="update_time" property="updateTime" />
+        <result column="create_time" property="createTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, banner_name, sort, is_show, image_url, page_url, update_time, create_time
+    </sql>
+
+</mapper>

@@ -21,7 +21,7 @@ import java.util.List;
  */
 public interface GoodsMapper extends BaseMapper<Goods> {
 
-    @Select("select g.id as goods_id, g.goods_name, g.purpose, g.selling , g.goods_type_id, g.show_image, g.price, c.id, c.goods_count from goods g left JOIN (select * from shopping_cart c  where c.user_id = #{userId}) c on g.id = c.goods_id  ${ew.customSqlSegment}")
+    @Select("select g.id as goods_id, g.goods_name, g.purpose, g.selling , g.is_hot, g.goods_type_id, g.show_image, g.price, c.id, c.goods_count from goods g left JOIN (select * from shopping_cart c  where c.user_id = #{userId}) c on g.id = c.goods_id  ${ew.customSqlSegment}")
     List<ShopingCartGoods> getGoodsPage(Page<ShopingCartGoods> page, int userId, @Param(Constants.WRAPPER) Wrapper wrapper);
 
 }

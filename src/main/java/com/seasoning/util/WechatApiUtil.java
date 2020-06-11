@@ -56,7 +56,7 @@ public class WechatApiUtil {
         return HttpUtil.doGet(CODE_SESSION_URL, param);
     }
 
-    public String placeOrder(Integer orderId, String totalFee, String openid) {
+    public String placeOrder(String orderId, String totalFee, String openid) {
 
         String result = HttpUtil.postXML(PLACE_ORDER_URL, paramXml(orderId, totalFee, openid));
         if (result == null) {
@@ -93,7 +93,7 @@ public class WechatApiUtil {
 //        String sign = MD5Util.EncryptionStr32(signSource).toUpperCase();
 //        paymentParam.setPaySign(sign);
 //        return paymentParam;
-    private String paramXml(Integer orderId, String totalFee, String openid){
+    private String paramXml(String orderId, String totalFee, String openid){
         //生成的随机字符串
         //String nonce_str = StringUtils.getRandomStringByLength(32);
         long rand = RandomUtils.nextInt(100,999);
@@ -129,7 +129,7 @@ public class WechatApiUtil {
     }
 
 
-    public String queryOrder(Integer orderId, String totalFee) {
+    public String queryOrder(String orderId, String totalFee) {
 
         String result = HttpUtil.postXML(QUERY_ORDER_URL, paramXml(orderId));
         if (result == null) {
@@ -161,7 +161,7 @@ public class WechatApiUtil {
         return tradeState;
     }
 
-    private String paramXml(Integer orderId){
+    private String paramXml(String orderId){
         //生成的随机字符串
         long rand = RandomUtils.nextInt(100,999);
         String nonce_str = DateFormatUtils.format(new Date(), "yyyyMMdd")+rand;

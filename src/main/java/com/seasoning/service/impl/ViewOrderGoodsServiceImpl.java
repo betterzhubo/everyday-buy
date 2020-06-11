@@ -6,6 +6,9 @@ import com.seasoning.service.ViewOrderGoodsService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * <p>
  * VIEW 服务实现类
@@ -16,5 +19,8 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class ViewOrderGoodsServiceImpl extends ServiceImpl<ViewOrderGoodsMapper, ViewOrderGoods> implements ViewOrderGoodsService {
-
+    @Override
+    public List<Map<String, Object>> getStatusCount(Integer userId) {
+        return this.baseMapper.getStatusCount(userId);
+    }
 }

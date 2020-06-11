@@ -45,6 +45,10 @@ $(function (){
 		},
         columns: [
             {
+                data: "id",
+                width : "40px"
+            },
+            {
             	className : "ellipsis",	//文字过长时用省略号显示，CSS实现
             	data: "goodsName",
             	render : CONSTANT.DATA_TABLES.RENDER.ELLIPSIS,//会显示省略号的列，需要用title属性实现划过时显示全部文本的效果
@@ -80,6 +84,13 @@ $(function (){
 					return data?"上架":"下架";
 				}
 			},
+			{
+				data : "isHot",
+				width : "100px",
+				render : function(data,type, row, meta) {
+					return data?"热卖中":"非热卖";
+				}
+			},
 			 {
 				className : "td-operation",
 				data: null,
@@ -95,11 +106,11 @@ $(function (){
         		$(row).addClass("info");
 			}
         	//给当前行某列加样式
-        	$('td', row).eq(4).addClass(data.selling?"text-success":"text-error");
+        	$('td', row).eq(7).addClass(data.selling?"text-success":"text-error");
         	//不使用render，改用jquery文档操作呈现单元格
             var $btnEdit = $('<button type="button" class="btn btn-small btn-primary btn-edit">修改</button>');
             var $btnDel = $('<button type="button" class="btn btn-small btn-danger btn-del">删除</button>');
-            $('td', row).eq(5).append($btnEdit).append($btnDel);
+            $('td', row).eq(7).append($btnEdit).append($btnDel);
         },
         "drawCallback": function( settings ) {
         	//渲染完毕后的回调
@@ -257,7 +268,7 @@ function bigImgShow(imgUrl){
 }
 var bigImgShowTag = function(imgUrl){
     return $("<a>").text(imgUrl).click(function () {
-        bigImgShow("static/image/"+imgUrl);
+        bigImgShow(imgUrl);
     });
 }
 
@@ -314,7 +325,7 @@ var showImageList = function(fileList, operateType){
 		//动态添加html元素
 		var imgId = "img-" + fileList[i].imagesUrl
 		var delTag = "<div class='cover'><i class='delbtn'>删除</i></div>";
-		var picHtml = $("<div class='imageDiv' > <img id='img-" + fileList[i].name + "' /> </div>");
+		var picHtml = $("<div class='imageDiv' > <img id='" + imgId + "' /> </div>");
 		if(operateType == 1){
 			picHtml.append(delTag);
 		}
@@ -350,7 +361,7 @@ $("#upload-file").change(function () {
         success: function (data) {
             if(0 == data.code){
 				$.dialog.tips("上传图片成功!");
-                $("#show-image-edit").html(bigImgShowTag(fileObj.name));
+                $("#show-image-edit").html(bigImgShowTag("static/image/"+fileObj.name));
             }else{
 				$.dialog.alert("error code=" + data.code);
             }
@@ -424,6 +435,7 @@ var getGoodsInfo = function(){
 	goodsInfo.goodsTypeId = $("#goods-type-edit").val();
 	goodsInfo.showImage = $("#show-image-edit a").eq(0).text();
 	goodsInfo.selling = $('input[name="sell-edit"]:checked').val()==1
+	goodsInfo.isHot = $('input[name="hot-edit"]:checked').val()==1
 	return goodsInfo;
 }
 
@@ -446,6 +458,12 @@ var goodsTable = {
 			case 3:
 				param.orderColumn = "purpose";
 				break;
+			case 4:
+				param.orderColumn = "selling";
+				break;
+			case 5:
+				param.orderColumn = "isHot";
+				break;
 			default:
 				param.orderColumn = "selling";
 				break;
@@ -460,6 +478,8 @@ var goodsTable = {
 		param.purpose = $("#purpose-search").val();
 		var sellingSearch = $("#selling-search").val();
 		param.selling = sellingSearch ? sellingSearch == 1 : sellingSearch;
+		var hotSearch = $("#is-hot-search").val();
+		param.isHot = hotSearch ? hotSearch == 1 : hotSearch;
 		//组装分页参数
 		param.current = data.start / data.length;
 		param.pageSize = data.length;
@@ -482,6 +502,7 @@ var goodsTable = {
 		$("#goods-type-view").text(contentText);
 		$("#purpose-view").text(item.purpose == 1 ? "自用" : "餐饮");
 		$("#selling-view").text(item.selling?"上架":"下架");
+		$("#is-hot-view").text(item.isHot?"热卖中":"非热卖");
         if(item.showImage){
             $("#show-image-view").html(bigImgShowTag(item.showImage));
         }else{
@@ -505,6 +526,7 @@ var goodsTable = {
 		$("#goods-type-edit").val(item.goodsTypeId);
 		$("#purpose-edit").val(item.purpose);
 		item.selling ? $("#selling-edit").attr("checked","checked"):$("#un-selling-edit").attr("checked","checked");
+		item.isHot ? $("#is-hot-edit").attr("checked","checked"):$("#un-hot-edit").attr("checked","checked");
         $("#show-image-edit").html(bigImgShowTag(item.showImage));
 		$("#user-edit").show().siblings(".info-block").hide();
 		$("#goods-edit-head").show().siblings(".block-header").hide();
@@ -547,7 +569,7 @@ var goodsTable = {
 					$(".btn-cancel").click();
 					// $('#table-user').DataTable().clear();
 					// $('#table-user').DataTable().ajax.reload(null, false);
-					$('#table-user').DataTable().clear().draw("full-hold");
+					$('#table-goods').DataTable().draw("full-hold");
 				}else{
 					$.dialog.alert("保存编辑失败 error code = "+ result.code);
 				}

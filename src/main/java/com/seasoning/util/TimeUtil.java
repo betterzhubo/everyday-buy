@@ -6,6 +6,10 @@ import org.apache.commons.lang3.time.DateUtils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
@@ -37,7 +41,7 @@ public class TimeUtil {
 	public static final String PATTERN_yyyy_MM_dd_HH_mm_ss = "yyyy-MM-dd HH:mm:ss";
 	public static final String PATTERN_yyyyMMddHHmmss = "yyyyMMddHHmmss";
 	public static final String PATTERN_yyyyMMdd = "yyyyMMdd";
-	public static final String PATTERN_FORMAT5 = "yyyy/MM/dd/HH:mm:ss";
+	public static final String PATTERN_FORMAT5 = "yyyy/MM/dd HH:mm:ss";
 	public static final String PATTERN_yyyyMM = "yyyyMM";
 
 	/**
@@ -443,5 +447,13 @@ public class TimeUtil {
 			return true;
 		}
 		return false;
+	}
+	public static String localDateTimeFormat(LocalDateTime date){
+		DateTimeFormatter dtf = DateTimeFormatter.ofPattern(PATTERN_FORMAT5);
+		return dtf.format(date);
+	}
+	public static LocalDateTime parse(String strTime){
+		Instant instant = Instant.ofEpochMilli(Long.parseLong(strTime));
+		return LocalDateTime.ofInstant(instant, ZoneOffset.of("+8"));
 	}
 }
